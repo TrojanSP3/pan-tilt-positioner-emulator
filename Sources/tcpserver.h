@@ -12,7 +12,7 @@ class TCPServer
 {
 public:
     ~TCPServer();
-    void Start(const int port);
+    void Start(const uint16_t port);
     void Stop();
     bool IsOpen();
     void Loop();
@@ -28,7 +28,7 @@ private:
     void AddToOutputBuffer(std::string msg);
     std::string GetFromOutputBuffer();
 
-    int port=0;
+    uint16_t port=0;
     std::queue<std::string> inputStringBuffer;
     std::mutex inputStringBufferMutex;
     std::queue<std::string> outputStringBuffer;

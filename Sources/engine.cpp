@@ -273,7 +273,7 @@ int Engine::Azimuth::MAX_AXIS_SPEED_PER_SECOND() const
 }
 int Engine::Azimuth::MAX_AXIS_SPEED_PER_TICK() const
 {
-    return double(MAX_AXIS_SPEED_PER_SECOND())*CONFIG::ENGINE::TICK_MS.Get()/1000;
+    return static_cast<int>( static_cast<double>(MAX_AXIS_SPEED_PER_SECOND())*CONFIG::ENGINE::TICK_MS.Get()/1000);
 }
 bool Engine::Elevation::IsAzimuth() const
 {
@@ -289,5 +289,5 @@ int Engine::Elevation::MAX_AXIS_SPEED_PER_SECOND() const
 }
 int Engine::Elevation::MAX_AXIS_SPEED_PER_TICK() const
 {
-    return double(MAX_AXIS_SPEED_PER_SECOND())*CONFIG::ENGINE::TICK_MS.Get()/1000;
+    return static_cast<int>( static_cast<double>(MAX_AXIS_SPEED_PER_SECOND())*CONFIG::ENGINE::TICK_MS.Get()/1000);
 }

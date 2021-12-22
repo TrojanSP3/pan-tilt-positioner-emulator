@@ -179,11 +179,11 @@ int Utils::Mso_Elevation(int val)
 }
 int Utils::Mso_VelToEps(int val)
 {
-    val=int(float(val)/CONFIG::ENGINE::VEL_TO_EPS_COEFFICIENT.Get());
+    val=static_cast<int>(static_cast<double>(val)/CONFIG::ENGINE::VEL_TO_EPS_COEFFICIENT.Get());
     return val;
 }
 int Utils::Mso_EpsToVel(int val)
 {
-    val=int(float(val)*CONFIG::ENGINE::VEL_TO_EPS_COEFFICIENT.Get());
+    val=static_cast<int>(static_cast<double>(val)*CONFIG::ENGINE::VEL_TO_EPS_COEFFICIENT.Get());
     return val;
 }

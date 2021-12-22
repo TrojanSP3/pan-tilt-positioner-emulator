@@ -422,7 +422,7 @@ std::string Protocol_MSO2::GetCommandString()
         }
 
         std::for_each(command.begin(), command.end(), [](char & c){
-                c = ::tolower(c);
+                c = static_cast<char>(::tolower(c));
             });
     }
     return command;
@@ -680,14 +680,14 @@ void Protocol_MSO2::Cmd_i_set(const Command& command)
     {
         if(command.parameters.size()>2)
         {
-            int num = std::stoi( command.parameters[1] );
-            int val_int = std::stoi( command.parameters[2] );
+            int32_t num = std::stoi( command.parameters[1] );
+            int32_t val_int = std::stoi( command.parameters[2] );
             if(val_int==0 || val_int==1)
             {
                 bool val = val_int;
                 if(num>=0 && num<=NUMBER_OF_INPUTS)
                 {
-                    state.inputs[num]=val;
+                    state.inputs[static_cast<uint32_t>(num)]=val;
                 }
             }
         }
@@ -697,7 +697,7 @@ void Protocol_MSO2::Cmd_i_set(const Command& command)
                 if(command.parameters[1]=="all")
                     for(int i=0;i<NUMBER_OF_INPUTS;++i)
                     {
-                        state.inputs[i]=true;
+                        state.inputs[static_cast<uint32_t>(i)]=true;
                     }
         }
 
@@ -713,14 +713,14 @@ void Protocol_MSO2::Cmd_o_set(const Command& command)
     {
         if(command.parameters.size()>2)
         {
-            int num = std::stoi( command.parameters[1] );
-            int val_int = std::stoi( command.parameters[2] );
+            int32_t num = std::stoi( command.parameters[1] );
+            int32_t val_int = std::stoi( command.parameters[2] );
             if(val_int==0 || val_int==1)
             {
                 bool val = val_int;
                 if(num>=0 && num<=NUMBER_OF_INPUTS)
                 {
-                    state.outputs[num]=val;
+                    state.outputs[static_cast<uint32_t>(num)]=val;
                 }
             }
         }

@@ -101,5 +101,5 @@ std::string Property<uint32_t>::ToString() const
 template<>
 void Property<uint32_t>::FromString(const std::string &s)
 {
-    Set(std::stoul(s));
+    Set(static_cast<uint32_t>(std::stoul(s)));
 }

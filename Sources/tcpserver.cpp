@@ -22,7 +22,7 @@ TCPServer::~TCPServer()
     }
 }
 
-void TCPServer::Start(const int port)
+void TCPServer::Start(const uint16_t port)
 {
     Stop();
     this->port=port;

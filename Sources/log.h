@@ -16,7 +16,7 @@ class Log
     class LogFile;
 public:
     ~Log();
-    void Start(std::string filename, uint64_t max_file_size=10*1024*1014);
+    void Start(std::string filename, ssize_t max_file_size=10*1024*1014);
     void Stop();
     void WriteDebug(std::string module, std::string method, std::string message);
     void WriteInfo(std::string module, std::string method, std::string message);
@@ -40,7 +40,7 @@ private:
     public:
         ~LogFile();
         void SetFileName(std::string name);
-        void SetFileSize(size_t size);
+        void SetFileSize(ssize_t size);
         void Open();
         void Close();
         bool isOpen() const;
@@ -55,7 +55,7 @@ private:
     private:
         std::fstream file;
         std::string file_name="";
-        size_t max_file_size;
+        ssize_t max_file_size;
     } logFile;
 };
 

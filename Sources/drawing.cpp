@@ -18,14 +18,14 @@ inline int MSO_MAX()
 {
     return CONFIG::ENGINE::MAX_AZIMUTH.Get();
 }
-const int MSO_MIN = 0;
+
 const int PICTURE_BORDER_SIZE=1;
 
 inline int ConvertPointToMSOUnits(int i, int j, int field_size)
 {
     int result=-1;
-    double x = i-field_size/2;
-    double y = -j+field_size/2;
+    int x = i-field_size/2;
+    int y = -j+field_size/2;
     if(y==0)
     {
         if(x>=0)
@@ -55,12 +55,12 @@ inline int ConvertPointToMSOUnits(int i, int j, int field_size)
             if(x*y>0)
             {
                 double v_atan = atan(x/y);
-                result = Utils::RadToMsoRad(abs(v_atan));
+                result = Utils::RadToMsoRad(fabs(v_atan));
             }
             else
             {
                 double v_atan = atan(y/x);
-                result = Utils::RadToMsoRad(abs(v_atan));
+                result = Utils::RadToMsoRad(fabs(v_atan));
             }
 
             if(x>0 && y<0)
@@ -283,7 +283,7 @@ void Drawing::UpdateCharMapForAzimuth()
     LOG::WriteDebug(LOG_MODULE,LOG_NAME,"BEGIN");
 #endif
 
-    double current_precision_part = (double)current_azimuth/precision_in_mso2_units;
+    double current_precision_part = static_cast<double>(current_azimuth)/precision_in_mso2_units;
     int mso_azimuth_min=
             int(std::floor(current_precision_part))*precision_in_mso2_units;
     int mso_azimuth_max=
@@ -320,8 +320,10 @@ void Drawing::UpdateCharMapForAzimuth()
             }
 
             int sqr_diff_from_center_to_draw_circle=
-                    std::pow((i-char_map_azimuth_width/2),2)+
-                    std::pow((j-char_map_azimuth_height/2),2);
+                    static_cast<int>(
+                        std::pow((i-char_map_azimuth_width/2),2)+
+                        std::pow((j-char_map_azimuth_height/2),2)
+                    );
             if(
                     sqr_diff_from_center_to_draw_circle>=sqr_diff_from_center_to_draw_circle_min
                     &&
@@ -437,7 +439,7 @@ void Drawing::UpdateCharMapForElevation()
 
     const int elevation_shift=CONFIG::ENGINE::ZERO_ELEVATION.Get()-MSO_MAX()/4;
     int current_elevation_shift=current_elevation-elevation_shift;
-    double current_precision_part = (double)current_elevation_shift/precision_in_mso2_units;
+    double current_precision_part = static_cast<double>(current_elevation_shift)/precision_in_mso2_units;
     int mso_elevation_min=
             int(std::floor(current_precision_part))*precision_in_mso2_units;
     int mso_elevation_max=
@@ -476,8 +478,10 @@ void Drawing::UpdateCharMapForElevation()
             }
 
             int sqr_diff_from_center_to_draw_circle=
-                                std::pow((i),2)+
-                                std::pow((j-char_map_elevation_height/2),2);
+                    static_cast<int>(
+                        std::pow((i),2)+
+                        std::pow((j-char_map_elevation_height/2),2)
+                    );
 
             if(
                 sqr_diff_from_center_to_draw_circle>=sqr_diff_from_center_to_draw_circle_min

@@ -32,7 +32,7 @@ void Log::log_thread_procedure(Log* obj)
     }
 }
 
-void Log::Start(std::string filename, uint64_t max_file_size)
+void Log::Start(std::string filename, ssize_t max_file_size)
 {
     Stop();
     logFile.SetFileName(filename);
@@ -148,7 +148,7 @@ void Log::LogFile::SetFileName(std::string name)
     file_name=name;
 }
 
-void Log::LogFile::SetFileSize(size_t size)
+void Log::LogFile::SetFileSize(ssize_t size)
 {
     max_file_size=size;
 }
@@ -190,7 +190,7 @@ bool Log::LogFile::isExist()
 
 bool Log::LogFile::isValidFileSize()
 {
-    size_t size = file.tellp();
+    ssize_t size = file.tellp();
     bool result = (size<=max_file_size?true:false);
     return result;
 }
