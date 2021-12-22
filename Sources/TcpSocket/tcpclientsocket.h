@@ -9,15 +9,15 @@ public:
     TcpClientSocket(int socket=0);
     ~TcpClientSocket();
 
-    void Open(std::string _ip, int _port);
+    void Open(std::string _ip, uint16_t _port);
     void Close();
     bool IsOpen() const;
     int BytesAvailable() const;
 
-    uint64_t Read(char *data, uint64_t size);
+    ssize_t Read(char *data, uint64_t size);
     char ReadByte();
     std::string ReadLine();
-    uint64_t Write(const char *data, uint64_t size);
+    ssize_t Write(const char *data, uint64_t size);
     void WriteLine(std::string data);
     int Id() const;
 private:

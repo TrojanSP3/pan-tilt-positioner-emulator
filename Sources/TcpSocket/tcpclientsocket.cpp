@@ -26,7 +26,7 @@ TcpClientSocket::~TcpClientSocket()
     }
 }
 
-void TcpClientSocket::Open(std::string ip, int port)
+void TcpClientSocket::Open(std::string ip, uint16_t port)
 {
     if(IsOpen())
         Close();
@@ -35,7 +35,7 @@ void TcpClientSocket::Open(std::string ip, int port)
         throw TcpSocketException("Wrong port");;
 
     in_addr_t ipaddr = inet_addr(ip.c_str());
-    if(ipaddr == (in_addr_t)(-1))
+    if(ipaddr == static_cast<in_addr_t>(-1))
         throw TcpSocketException("Wrong host address");
 
     struct sockaddr_in addr;
@@ -48,8 +48,7 @@ void TcpClientSocket::Open(std::string ip, int port)
     {
         TcpSocketException::ThrowErrnoException(errno);
     }
-
-    if(connect(clientSocket, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+    if(connect(clientSocket, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) < 0)
     {
         TcpSocketException::ThrowErrnoException(errno);
     }
@@ -93,17 +92,17 @@ int TcpClientSocket::BytesAvailable() const
     return 0;
 }
 
-uint64_t TcpClientSocket::Read(char *data, uint64_t size)
+ssize_t TcpClientSocket::Read(char *data, uint64_t size)
 {
     const int FLAGS = 0;
-    uint64_t result = recv(clientSocket, data, size, FLAGS);
+    ssize_t result = recv(clientSocket, data, size, FLAGS);
     return result;
 }
 
 char TcpClientSocket::ReadByte()
 {
     char result = 0;
-    int res = Read(&result,1);
+    ssize_t res = Read(&result,1);
     if(res<=0)
         TcpSocketException::ThrowErrnoException(errno);
     return result;
@@ -118,7 +117,7 @@ std::string TcpClientSocket::ReadLine()
     int buffer_pos=0;
     do
     {
-        int res = Read(&buffer_char, 1);
+        ssize_t res = Read(&buffer_char, 1);
         if(res>0)
         {
             if(buffer_pos>=MAX_INPUT_BUFFER_SIZE)
@@ -155,15 +154,15 @@ std::string TcpClientSocket::ReadLine()
     return result;
 }
 
-uint64_t TcpClientSocket::Write(const char *data, uint64_t size)
+ssize_t TcpClientSocket::Write(const char *data, uint64_t size)
 {
-    int sended_bytes = send(clientSocket, data, size, 0);
+    ssize_t sended_bytes = send(clientSocket, data, size, 0);
     return sended_bytes;
 }
 
 void TcpClientSocket::WriteLine(std::string data)
 {
-    int sended_bytes = Write(data.c_str(), data.length());
+    ssize_t sended_bytes = Write(data.c_str(), data.length());
     if(sended_bytes<=0)
     {
         TcpSocketException::ThrowErrnoException(errno);

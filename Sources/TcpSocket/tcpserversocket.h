@@ -14,7 +14,7 @@ class TcpServerSocket
 public:
 	TcpServerSocket();
     ~TcpServerSocket();
-    void Start(const int port);
+    void Start(const uint16_t port);
     void Stop();
     bool IsListening() const;
     bool IsClientAvailable() const;
@@ -24,7 +24,7 @@ protected:
     void SetUpServerSocket();
     void SetClientSocketParameters(int client_socket);
 private:
-    int port;
+    uint16_t port;
     int serverSocket;
 private:
     static const int MAX_PENDING_CONNECTIONS = 5;

@@ -27,7 +27,7 @@ TcpServerSocket::~TcpServerSocket()
     }
 }
 
-void TcpServerSocket::Start(const int port)
+void TcpServerSocket::Start(const uint16_t port)
 {
     Stop();
     this->port=port;
@@ -47,7 +47,7 @@ void TcpServerSocket::SetUpServerSocket()
     serverAddress.sin_port = htons( port );
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-    int not_binded = bind(serverSocket,(struct sockaddr *)&serverAddress, sizeof(serverAddress));
+    int not_binded = bind(serverSocket,reinterpret_cast<struct sockaddr *>(&serverAddress), sizeof(serverAddress));
     if(not_binded)
     {
         int remember_errno = errno;
@@ -126,8 +126,8 @@ bool TcpServerSocket::IsClientAvailable() const
 TcpClientSocket* TcpServerSocket::AcceptClient()
 {
     struct sockaddr_in client_address;
-    int addrlength = sizeof (struct sockaddr_in);
-    int client_socket = accept(serverSocket, (struct sockaddr*)&client_address, (socklen_t*)&addrlength);
+    socklen_t addrlength = sizeof (struct sockaddr_in);
+    int client_socket = accept(serverSocket, reinterpret_cast<struct sockaddr *>(&client_address), &addrlength);
 
     if(client_socket<=0)
     {
