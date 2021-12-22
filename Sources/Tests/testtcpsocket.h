@@ -25,8 +25,8 @@ namespace UnitTests
         static void ReadFromClient_line();
     private:
         static const int LONG_TIMEOUT;
-        static const int BASE_PORT;
-        static int PORT_CNT;
+        static const uint16_t BASE_PORT;
+        static uint16_t PORT_CNT;
     };
 
 }

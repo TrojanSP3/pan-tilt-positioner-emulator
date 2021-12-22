@@ -25,7 +25,8 @@ void Utils::Sleep(const int time_ms)
 void Utils::ClearScreen()
 {
     std::cout.flush();
-    system("clear");
+    int unused_result = system("clear");
+    (void)unused_result;
     std::cout.flush();
 }
 

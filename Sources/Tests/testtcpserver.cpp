@@ -6,8 +6,8 @@ using namespace UnitTests;
 
 const int TestTcpServer::LONG_TIMEOUT=5000;
 const std::string LOCALHOST = "127.0.0.1";
-const int TestTcpServer::BASE_PORT = 27000;
-int TestTcpServer::PORT_CNT = 0;
+const uint16_t TestTcpServer::BASE_PORT = 27000;
+uint16_t TestTcpServer::PORT_CNT = 0;
 
 std::vector<TestCase> TestTcpServer::GetTestCases()
 {
@@ -28,7 +28,7 @@ std::vector<TestCase> TestTcpServer::GetTestCases()
 
 void TestTcpServer::Start_Stop_IsOpen()
 {
-    const int PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
     TCPServer server;
     server.Start(PORT);
     if(!server.IsOpen())
@@ -40,7 +40,7 @@ void TestTcpServer::Start_Stop_IsOpen()
 
 void TestTcpServer::Start_Restart()
 {
-    const int PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
     TCPServer server;
     server.Start(PORT);
     if(!server.IsOpen())
@@ -60,7 +60,7 @@ void TestTcpServer::Start_Restart()
 
 void TestTcpServer::Port()
 {
-    const int PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
     TCPServer server;
     ASSERT(server.Port()==0);
     server.Start(PORT);
@@ -75,7 +75,7 @@ void TestTcpServer::Port()
 
 void TestTcpServer::Send()
 {
-    const int PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
     const std::string TESTSTRING = "test string";
     const std::string TESTMESSAGE = TESTSTRING+"\n";
 
@@ -110,7 +110,7 @@ void TestTcpServer::Send()
 
 void TestTcpServer::Recv_IsDataAvailable()
 {
-    const int PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
     const std::string TESTSTRING = "te5t 5tr1ng";
     const std::string MESSAGE = TESTSTRING+"\n";
     TCPServer server;
@@ -141,7 +141,7 @@ void TestTcpServer::Recv_IsDataAvailable()
 
 void TestTcpServer::ClientChanging()
 {
-    const int PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
     const std::string TESTSTRING_TOCLIENT = "tst asd";
     const std::string MESSAGE_TOCLIENT = TESTSTRING_TOCLIENT+"\n";
     const std::string TESTSTRING_TOSERVER = "sm tst";
@@ -187,7 +187,7 @@ void TestTcpServer::ClientChanging()
 
 void TestTcpServer::Recv_3lines()
 {
-    const int PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
     const std::string TESTSTR_1 = "test1 str1";
     const std::string TESTSTR_2 = "test2 str2";
     const std::string TESTSTR_3 = "test3 str3";
@@ -228,7 +228,7 @@ void TestTcpServer::Recv_3lines()
 
 void TestTcpServer::TooManyClients()
 {
-    const int PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
     const std::string TESTSTR_1 = "test1 str1\n";
     const std::string TESTSTR_2 = "test2 str2\n";
     const std::string TESTSTR_3 = "test3 str3\n";
@@ -263,7 +263,7 @@ void TestTcpServer::TooManyClients()
 
 void TestTcpServer::Start_Restart_With_Client()
 {
-    const int PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
     TcpClientSocket client;
 
     TCPServer server;
