@@ -117,8 +117,7 @@ void TCPServer::Loop()
         if( (client!=nullptr) && (!client->IsOpen()) )
         {
             isClientPresent.store(false);
-            delete client;
-            client=nullptr;
+            delete client; client=nullptr;
         }
 
         if(server.IsClientAvailable())
@@ -131,8 +130,7 @@ void TCPServer::Loop()
                 {
                     LOG.WriteInfo(LOGMODULE, LOGNAME, "Dropping client...");
                     possible_client->Close();
-                    delete possible_client;
-                    possible_client=nullptr;
+                    delete possible_client; possible_client=nullptr;
                 }
                 else
                 {
@@ -140,14 +138,13 @@ void TCPServer::Loop()
                     if( client!=nullptr )
                     {
                         client->Close();
-                        delete client;
+                        delete client; client=nullptr;
                     }
                     client=possible_client;
                     if(client_thread!=nullptr)
                     {
                         client_thread->join();
-                        delete client_thread;
-                        client_thread=nullptr;
+                        delete client_thread; client_thread=nullptr;
                     }
 
                     client_thread = new std::thread(client_thread_procedure, this, client);
@@ -162,7 +159,7 @@ void TCPServer::Loop()
     if( client!=nullptr )
     {
         client->Close();
-        delete client;
+        delete client; client=nullptr;
         isClientPresent.store(false);
     }
 
@@ -204,19 +201,18 @@ void TCPServer::ProcessConnection(TcpClientSocket* client)
 
     while(!server_thread_flag_stop.load())
     {
-
-        if(!client->IsOpen())
-        {
-            LOG.WriteInfo(LOGMODULE,LOGNAME,log_client+"Client disconnected");
-            break;
-        }
-
         while(client->BytesAvailable())
         {
             std::string data=client->ReadLine();
             LOG.WriteDebug(LOGMODULE,LOGNAME,log_client+"Data from client: "+data);
             TCPServer::AddToInputBuffer(data);
             Utils::Sleep(10);
+        }
+
+        if(!client->IsOpen())
+        {
+            LOG.WriteInfo(LOGMODULE,LOGNAME,log_client+"Client disconnected");
+            break;
         }
 
         while(TCPServer::outputStringBuffer.size())

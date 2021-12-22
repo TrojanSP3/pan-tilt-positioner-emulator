@@ -48,8 +48,12 @@ inline int random_vol(int min=MIN_VOL,int max=MAX_VOL)
 Protocol_MSO2::~Protocol_MSO2()
 {
     need_to_destroy_thread.store(true);
-    if(thread_period!=nullptr && thread_period->joinable())
-        thread_period->join();
+    if(thread_period!=nullptr)
+    {
+        if(thread_period->joinable())
+            thread_period->join();
+        delete thread_period;
+    }
 }
 
 void Protocol_MSO2::ProtocolInit()
