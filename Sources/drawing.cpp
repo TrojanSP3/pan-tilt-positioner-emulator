@@ -109,9 +109,9 @@ Drawing::~Drawing()
         for(int i=0; i<char_map_azimuth_width;++i)
         {
             if(char_map_azimuth[i])
-                delete char_map_azimuth[i];
+                delete [] char_map_azimuth[i];
         }
-        delete char_map_azimuth;
+        delete [] char_map_azimuth;
         char_map_azimuth=nullptr;
     }
 
@@ -120,9 +120,9 @@ Drawing::~Drawing()
         for(int i=0; i<char_map_elevation_width;++i)
         {
             if(char_map_elevation[i])
-                delete char_map_elevation[i];
+                delete [] char_map_elevation[i];
         }
-        delete char_map_elevation;
+        delete [] char_map_elevation;
         char_map_elevation=nullptr;
     }
 }
