@@ -71,13 +71,13 @@ void TestProperty::readonly_create_get_set_string()
     PropertyReadOnly<int> value(KEY_1_INT);
     ASSERT(value.Get()==KEY_1_INT);
 
-    ((Property<int>)value).Set(KEY_2_INT);
+    static_cast<Property<int>>(value).Set(KEY_2_INT);
     ASSERT(value.Get()==KEY_1_INT);
 
     std::string str = value.GetString();
     ASSERT(str==KEY_1_STR);
 
-    ((Property<int>)value).SetFromString(KEY_2_STR);
+    static_cast<Property<int>>(value).SetFromString(KEY_2_STR);
     ASSERT(value.Get()==KEY_1_INT);
 
     str = value.GetString();
@@ -223,6 +223,7 @@ void TestProperty::base_double_get_set_string()
 {
     const double DEFAULT = 0;
     const double VALUE =  0.756550;
+    const int PRECISION = 1000000;
     const std::string STR = "0.756550";
 
     Property<double> prop_from_val(DEFAULT);
@@ -231,9 +232,13 @@ void TestProperty::base_double_get_set_string()
     prop_from_val.Set(VALUE);
     prop_from_str.SetFromString(STR);
 
-    ASSERT(prop_from_val.Get()==VALUE);
+    int64_t property_value_for_compare = static_cast<int64_t>(prop_from_val.Get()*PRECISION);
+    int64_t const_val_value_for_compare = static_cast<int64_t>(VALUE*PRECISION);
+    ASSERT(property_value_for_compare==const_val_value_for_compare);
     ASSERT(prop_from_val.GetString()==STR);
-    ASSERT(prop_from_str.Get()==VALUE);
+
+    property_value_for_compare = static_cast<int64_t>(prop_from_str.Get()*PRECISION);
+    ASSERT(property_value_for_compare==const_val_value_for_compare);
     ASSERT(prop_from_str.GetString()==STR);
 }
 

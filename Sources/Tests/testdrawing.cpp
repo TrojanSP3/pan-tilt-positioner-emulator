@@ -42,9 +42,6 @@ void TestDrawing::InfinitySpin()
         TestFramework::LogMsg(picture);
         SLEEPMS(300);
     }
-    TestFramework::LogMsg("Test finished");
-    while(true)
-        SLEEPMS(1000);
 }
 
 void TestDrawing::VisualCheckSomeParts()
@@ -130,7 +127,7 @@ void TestDrawing::AllCharactersPresentOnPicture()
         double progress = double(mso)/CONFIG::ENGINE::MAX_AZIMUTH.Get();
         if(progress>report_progress)
         {
-            int progress_int= progress*100;
+            int progress_int= static_cast<int>(progress*100);
             std::string msg = "Test progress: "+std::to_string(progress_int)+"%";
             TestFramework::LogMsg(msg);
             ++reportedStatuses;

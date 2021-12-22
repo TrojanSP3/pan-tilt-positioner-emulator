@@ -26,40 +26,40 @@ void TestUtils::Sleep()
     Utils::Sleep(SLEEP_TIME_MS);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-    int time_elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    long time_elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     ASSERT(time_elapsed_ms>=SLEEP_TIME_MS);
 }
 
 void TestUtils::AnglesConvert()
 {
-    const int PRECISION_RAD = 5;
-    const int PRECISION_RAD_VALUE = std::pow(10,PRECISION_RAD);
-    const int PRECISION_DEG = 2;
-    const int PRECISION_DEG_VALUE = std::pow(10,PRECISION_DEG);
+    const int PRECISION_RAD = static_cast<int>(std::pow(10,5));
+    const double PRECISION_RAD_VALUE = 1.0/PRECISION_RAD;
+    const int PRECISION_DEG = static_cast<int>(std::pow(10,2));
+    const double PRECISION_DEG_VALUE = 1.0/PRECISION_DEG;
 
     const double ANGLE_DEG = 45;
     const double ANGLE_RAD = 0.785398163397448;
-    const int ANGLE_MSO = ANGLE_RAD*10000+1;
+    const int ANGLE_MSO =  static_cast<int>(ANGLE_RAD*10000+1);
 
     double rounded_deg, rounded_rad, rounded_mso;
 
     rounded_deg=Utils::RadToDegrees(ANGLE_RAD);
-    ASSERT(abs(rounded_deg-ANGLE_DEG)<=(1/PRECISION_DEG_VALUE));
+    ASSERT(fabs(rounded_deg-ANGLE_DEG)<=PRECISION_DEG_VALUE);
 
     rounded_rad=Utils::DegreesToRad(ANGLE_DEG);
-    ASSERT(abs(rounded_rad-ANGLE_RAD)<=(1/PRECISION_RAD_VALUE));
+    ASSERT(fabs(rounded_rad-ANGLE_RAD)<=PRECISION_RAD_VALUE);
 
     rounded_deg=Utils::MsoRadToDegrees(ANGLE_MSO);
-    ASSERT(abs(rounded_deg-ANGLE_DEG)<=(1/PRECISION_DEG_VALUE));
+    ASSERT(fabs(rounded_deg-ANGLE_DEG)<=PRECISION_DEG_VALUE);
 
     rounded_rad=Utils::MsoRadToRad(ANGLE_MSO);
-    ASSERT(abs(rounded_rad-ANGLE_RAD)<=(1/PRECISION_RAD_VALUE));
+    ASSERT(fabs(rounded_rad-ANGLE_RAD)<=PRECISION_RAD_VALUE);
 
     rounded_mso=Utils::RadToMsoRad(ANGLE_RAD);
-    ASSERT(abs(rounded_mso-ANGLE_MSO)<=1);
+    ASSERT(fabs(rounded_mso-ANGLE_MSO)<=1);
 
     rounded_mso=Utils::DegreesToMsoRad(ANGLE_DEG);
-    ASSERT(abs(rounded_mso-ANGLE_MSO)<=1);
+    ASSERT(fabs(rounded_mso-ANGLE_MSO)<=1);
 }
 
 void TestUtils::DateTimeString()

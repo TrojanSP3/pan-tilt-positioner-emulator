@@ -130,6 +130,8 @@ void TestProtocolMSO2::Client_connected()
     client.Close();
     state=protocol.Tick();
 
+    TestFramework::LogMsg("Tcp last: "+state.tcp_last_got_data);
+    TestFramework::LogMsg("MSG: "+MSG);
     ASSERT(state.tcp_last_got_data==MSG)
 }
 
@@ -204,7 +206,7 @@ void TestProtocolMSO2::Azimuth_syn()
 
     CONFIG::CONTROLLER::FAST_SYNCHRONIZATION.Set(false);
     MSO_State state = protocol.Tick();
-    ASSERT(state.azimuth_syncronized==false);
+    ASSERT(!state.azimuth_syncronized);
     client.WriteLine(MSG_syn);
     SLEEPMS(SHORT_SLEEP);
 
@@ -243,7 +245,7 @@ void TestProtocolMSO2::Azimuth_syn_fast()
 
     CONFIG::CONTROLLER::FAST_SYNCHRONIZATION.Set(true);
     MSO_State state = protocol.Tick();
-    ASSERT(state.azimuth_syncronized==false);
+    ASSERT(!state.azimuth_syncronized);
     client.WriteLine(MSG_syn);
     SLEEPMS(SHORT_SLEEP);
 
@@ -268,7 +270,7 @@ void TestProtocolMSO2::Elevation_syn()
 
     CONFIG::CONTROLLER::FAST_SYNCHRONIZATION.Set(false);
     MSO_State state = protocol.Tick();
-    ASSERT(state.elevation_syncronized==false);
+    ASSERT(!state.elevation_syncronized);
     client.WriteLine(MSG_syn);
     SLEEPMS(SHORT_SLEEP);
 
@@ -307,7 +309,7 @@ void TestProtocolMSO2::Elevation_syn_fast()
 
     CONFIG::CONTROLLER::FAST_SYNCHRONIZATION.Set(true);
     MSO_State state = protocol.Tick();
-    ASSERT(state.elevation_syncronized==false);
+    ASSERT(!state.elevation_syncronized);
     client.WriteLine(MSG_syn);
     SLEEPMS(SHORT_SLEEP);
 
@@ -544,7 +546,7 @@ void TestProtocolMSO2::Inputs_outputs()
     client.Open("127.0.0.1",PORT);
     TIMEOUT(client.IsOpen(),LONG_TIMEOUT);
 
-    for(int i=0; i<Protocol_MSO2::NUMBER_OF_INPUTS;++i)
+    for(size_t i=0; i<Protocol_MSO2::NUMBER_OF_INPUTS;++i)
     {
         std::string msg = "Check "+std::to_string(i+1)
                 +"/"+std::to_string(Protocol_MSO2::NUMBER_OF_INPUTS);
@@ -567,8 +569,8 @@ void TestProtocolMSO2::Inputs_outputs_init_1(const int port)
     ASSERT(!init_state.isChanged(new_state));
     for(unsigned int i=0;i<new_state.inputs.size();++i)
     {
-        ASSERT(new_state.inputs[i]==false);
-        ASSERT(new_state.outputs[i]==false);
+        ASSERT(!new_state.inputs[i]);
+        ASSERT(!new_state.outputs[i]);
     }
 }
 
@@ -587,14 +589,14 @@ void TestProtocolMSO2::Inputs_outputs_init_2(const int port)
 
     for(unsigned int i=0;i<new_state.inputs.size();++i)
     {
-        ASSERT(new_state.inputs[i]==true);
-        ASSERT(new_state.outputs[i]==true);
+        ASSERT(!new_state.inputs[i]);
+        ASSERT(!new_state.outputs[i]);
     }
 }
 
 void TestProtocolMSO2::Inputs_outputs_check_input(
         Protocol_MSO2* const protocol, TcpClientSocket* const client,
-        const int num)
+        const size_t num)
 {
     TestFramework::LogMsg("Disable input");
     Inputs_outputs_check_input_set_get_assert(protocol,client,num,false);
@@ -606,7 +608,7 @@ void TestProtocolMSO2::Inputs_outputs_check_input(
 
 void TestProtocolMSO2::Inputs_outputs_check_input_set_get_assert(
         Protocol_MSO2* const protocol, TcpClientSocket* const client,
-        const int num, bool value)
+        const size_t num, bool value)
 {
     const std::string MSG_I_GET      = "i\r\n";
     const std::string MSG_I_SET_WORD = "iset "+std::to_string(num)+" ";
@@ -640,14 +642,14 @@ void TestProtocolMSO2::Inputs_outputs_check_input_set_get_assert(
 
     //no other changes
     MSO_State new_state = protocol->Tick();
-    for(int i=0;i<Protocol_MSO2::NUMBER_OF_INPUTS; ++i)
+    for(size_t i=0;i<Protocol_MSO2::NUMBER_OF_INPUTS; ++i)
         if(i!=num)
             ASSERT(initial_state.inputs[i]==new_state.inputs[i]);
 }
 
 void TestProtocolMSO2::Inputs_outputs_check_output(
         Protocol_MSO2* const protocol, TcpClientSocket* const client,
-        const int num)
+        const size_t num)
 {
     TestFramework::LogMsg("Disable output");
     Inputs_outputs_check_output_set_get_assert(protocol,client,num,false);
@@ -659,7 +661,7 @@ void TestProtocolMSO2::Inputs_outputs_check_output(
 
 void TestProtocolMSO2::Inputs_outputs_check_output_set_get_assert(
         Protocol_MSO2* const protocol, TcpClientSocket* const client,
-        const int num, const bool value)
+        const size_t num, const bool value)
 {
     const std::string MSG_O_GET      = "g\r\n";
     const std::string MSG_O_SET_WORD = "o "+std::to_string(num)+" ";
@@ -693,7 +695,7 @@ void TestProtocolMSO2::Inputs_outputs_check_output_set_get_assert(
 
     //no other changes
     MSO_State new_state = protocol->Tick();
-    for(int i=0;i<Protocol_MSO2::NUMBER_OF_INPUTS; ++i)
+    for(size_t i=0;i<Protocol_MSO2::NUMBER_OF_INPUTS; ++i)
         if(i!=num)
             ASSERT(initial_state.outputs[i]==new_state.outputs[i]);
 

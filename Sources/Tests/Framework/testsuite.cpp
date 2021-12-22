@@ -33,10 +33,11 @@ void TestSuite::ThrowException()
     {
         EXCEPTION("This exception should be catched");
     }
-    catch(TestException& e)
+    catch(TestException)
     {
         return;
     }
+    //warning: code never be executed
     throw TestException("Exception was not catched",(__FILE__), (__LINE__));
 }
 
@@ -56,7 +57,7 @@ void TestSuite::TimeoutFail()
         bool b=false;
         TIMEOUT(a==b,100);
     }
-    catch(TestException& e)
+    catch(TestException)
     {
         return;
     }
@@ -78,7 +79,7 @@ void TestSuite::AssertFail()
         bool b=false;
         ASSERT(a==b);
     }
-    catch(TestException& e)
+    catch(TestException)
     {
         return;
     }

@@ -53,8 +53,8 @@ bool TestLog::CheckDataInLogFile(std::string keyword)
     while(!file.eof())
     {
         file>>str;
-        int pos = str.find(keyword,0);
-        found=(pos>=0);
+        size_t pos = str.find(keyword,0);
+        found=(pos!=std::string::npos);
         if(found)
             break;
     }
@@ -70,7 +70,12 @@ size_t TestLog::LogFileSize()
     }
     std::ifstream file(FILENAME());
     file.seekg(0,std::ios_base::end);
-    size_t size = file.tellg();
+    long stream_status = file.tellg();
+    size_t size = 0;
+    if(stream_status!=-1)
+        size = static_cast<size_t>(stream_status);
+    else
+        size = 0;
     return size;
 }
 
@@ -136,14 +141,14 @@ void TestLog::FileOverflow()
 {
     const std::string KEYWORD ="LogFile";
     const uint64_t MAX_SIZE=1024;
-    const long SIZE = 1.1*MAX_SIZE;
-    const long MAX_WORD_SIZE_T = 100;
+    const uint64_t SIZE = static_cast<uint64_t>(1.1*MAX_SIZE);
+    const uint64_t MAX_WORD_SIZE_T = 100;
 
-    const long MAX_WORD_SIZE = std::min(MAX_WORD_SIZE_T,SIZE);
-    const long WORDS_NUM = SIZE/MAX_WORD_SIZE;
+    const uint64_t MAX_WORD_SIZE = std::min(MAX_WORD_SIZE_T,SIZE);
+    const uint64_t WORDS_NUM = SIZE/MAX_WORD_SIZE;
 
     std::string word = "";
-    for(int i=0;i<MAX_WORD_SIZE;++i)
+    for(uint32_t i=0;i<MAX_WORD_SIZE;++i)
     {
         word.append("O");
     }
@@ -151,7 +156,7 @@ void TestLog::FileOverflow()
     TestLog::DeleteLogFile();
     Log logger;
     logger.Start(FILENAME(),MAX_SIZE);
-    for(int i=0;i<WORDS_NUM;++i)
+    for(uint64_t i=0;i<WORDS_NUM;++i)
     {
         if((i+1)%1000==0)
         {

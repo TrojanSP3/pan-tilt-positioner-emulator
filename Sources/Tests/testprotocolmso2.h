@@ -31,16 +31,16 @@ namespace UnitTests {
         static void Inputs_outputs_init_2(const int port);
         static void Inputs_outputs_check_input(
                 Protocol_MSO2* const protocol, TcpClientSocket* const client,
-                const int num);
+                const size_t num);
         static void Inputs_outputs_check_input_set_get_assert(
                 Protocol_MSO2* const protocol, TcpClientSocket* const client,
-                const int num, const bool value);
+                const size_t num, const bool value);
         static void Inputs_outputs_check_output(
                 Protocol_MSO2* const protocol, TcpClientSocket* const client,
-                const int num);
+                const size_t num);
         static void Inputs_outputs_check_output_set_get_assert(
                 Protocol_MSO2* const protocol, TcpClientSocket* const client,
-                const int num, const bool value);
+                const size_t num, const bool value);
         static MSO_State ParsePeriodLine(std::string period_line);
     private:
         static const int SHORT_SLEEP;

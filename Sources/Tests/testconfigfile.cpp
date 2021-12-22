@@ -85,8 +85,8 @@ bool CheckDataInFile(std::string keyword)
     while(!file.eof())
     {
         file>>str;
-        int pos = str.find(keyword,0);
-        found=(pos>=0);
+        size_t pos = str.find(keyword,0);
+        found=(pos!=std::string::npos);
         if(found)
             break;
     }

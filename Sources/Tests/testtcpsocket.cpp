@@ -271,7 +271,8 @@ void TestTcpSocket::WriteToClient_raw()
     const int PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
 
     const std::string MESSAGE_DATA = "No end of line!";
-    const int MESSAGE_LEN = MESSAGE_DATA.length();
+    const size_t MESSAGE_LEN = 15;
+    ASSERT(MESSAGE_LEN==MESSAGE_DATA.length());
 
     TcpServerSocket server;
     server.Start(PORT);
@@ -285,7 +286,7 @@ void TestTcpSocket::WriteToClient_raw()
     ASSERT(client_get->IsOpen());
 
     client_get->Write(MESSAGE_DATA.c_str(),MESSAGE_LEN);
-    TIMEOUT(client.BytesAvailable()==MESSAGE_LEN,LONG_TIMEOUT);
+    TIMEOUT(static_cast<size_t>(client.BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
     char msgbuf[MESSAGE_LEN];
     memset(&msgbuf,0,MESSAGE_LEN);
     client.Read(msgbuf,MESSAGE_LEN);
@@ -305,7 +306,7 @@ void TestTcpSocket::WriteToClient_line()
 
     const std::string MESSAGE_DATA = "End of line ->";
     const std::string MESSAGE = MESSAGE_DATA+"\r\n";
-    const int MESSAGE_LEN = MESSAGE.length();
+    const size_t MESSAGE_LEN = MESSAGE.length();
 
     TcpServerSocket server;
     server.Start(PORT);
@@ -319,7 +320,7 @@ void TestTcpSocket::WriteToClient_line()
     ASSERT(client_get->IsOpen());
 
     client_get->WriteLine(MESSAGE);
-    TIMEOUT(client.BytesAvailable()==MESSAGE_LEN,LONG_TIMEOUT);
+    TIMEOUT(static_cast<size_t>(client.BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
     std::string msg = client.ReadLine();
 
     ASSERT(msg==MESSAGE_DATA);
@@ -335,7 +336,9 @@ void TestTcpSocket::ReadFromClient_raw()
     const int PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
 
     const std::string MESSAGE_DATA = "No end of line!";
-    const int MESSAGE_LEN = MESSAGE_DATA.length();
+    const size_t MESSAGE_LEN = 15;
+
+    ASSERT(MESSAGE_LEN == MESSAGE_DATA.length());
 
     TcpServerSocket server;
     server.Start(PORT);
@@ -349,7 +352,7 @@ void TestTcpSocket::ReadFromClient_raw()
     ASSERT(client_get->IsOpen());
 
     client.Write(MESSAGE_DATA.c_str(),MESSAGE_LEN);
-    TIMEOUT(client_get->BytesAvailable()==MESSAGE_LEN,LONG_TIMEOUT);
+    TIMEOUT(static_cast<size_t>(client.BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
     char msgbuf[MESSAGE_LEN];
     client_get->Read(msgbuf,MESSAGE_LEN);
     std::string msg(msgbuf);
@@ -368,7 +371,7 @@ void TestTcpSocket::ReadFromClient_line()
 
     const std::string MESSAGE_DATA = "End of line ->";
     const std::string MESSAGE = MESSAGE_DATA+"\r\n";
-    const int MESSAGE_LEN = MESSAGE.length();
+    const size_t MESSAGE_LEN = MESSAGE.length();
 
     TcpServerSocket server;
     server.Start(PORT);
@@ -382,7 +385,7 @@ void TestTcpSocket::ReadFromClient_line()
     ASSERT(client_get->IsOpen());
 
     client.WriteLine(MESSAGE);
-    TIMEOUT(client_get->BytesAvailable()==MESSAGE_LEN,LONG_TIMEOUT);
+    TIMEOUT(static_cast<size_t>(client.BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
     std::string msg = client_get->ReadLine();
 
     ASSERT(msg==MESSAGE_DATA);
