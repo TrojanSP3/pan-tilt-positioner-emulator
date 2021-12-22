@@ -589,8 +589,8 @@ void TestProtocolMSO2::Inputs_outputs_init_2(const int port)
 
     for(unsigned int i=0;i<new_state.inputs.size();++i)
     {
-        ASSERT(!new_state.inputs[i]);
-        ASSERT(!new_state.outputs[i]);
+        ASSERT(new_state.inputs[i]);
+        ASSERT(new_state.outputs[i]);
     }
 }
 

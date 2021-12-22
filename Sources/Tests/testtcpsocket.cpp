@@ -352,7 +352,7 @@ void TestTcpSocket::ReadFromClient_raw()
     ASSERT(client_get->IsOpen());
 
     client.Write(MESSAGE_DATA.c_str(),MESSAGE_LEN);
-    TIMEOUT(static_cast<size_t>(client.BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
+    TIMEOUT(static_cast<size_t>(client_get->BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
     char msgbuf[MESSAGE_LEN];
     client_get->Read(msgbuf,MESSAGE_LEN);
     std::string msg(msgbuf);
@@ -385,7 +385,7 @@ void TestTcpSocket::ReadFromClient_line()
     ASSERT(client_get->IsOpen());
 
     client.WriteLine(MESSAGE);
-    TIMEOUT(static_cast<size_t>(client.BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
+    TIMEOUT(static_cast<size_t>(client_get->BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
     std::string msg = client_get->ReadLine();
 
     ASSERT(msg==MESSAGE_DATA);

@@ -9,6 +9,7 @@
 #include "Tests/testtcpsocket.h"
 #include "Tests/testtcpserver.h"
 #include "Tests/testprotocolmso2.h"
+#include "Tests/testdrawing.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,8 +17,8 @@ int main(int argc, char *argv[])
     LOG.Start(CONFIG::LOG::TEST_FILENAME.Get());
 
     /*std::vector<UnitTests::TestCase> TestList = UnitTests::TestProtocolMSO2::GetTestCases();
-    for(int i=0; i<14;++i)
-        TestList.erase(TestList.begin());
+    //for(int i=0; i<14;++i)
+        //TestList.erase(TestList.begin());
     bool test_result = UnitTests::TestFramework::RunTestList(TestList);//*/
 
     bool test_result = UnitTests::TestFramework::RunAllTests();

@@ -54,12 +54,12 @@ inline int ConvertPointToMSOUnits(int i, int j, int field_size)
         {
             if(x*y>0)
             {
-                double v_atan = atan(x/y);
+                double v_atan = atan(static_cast<double>(x)/y);
                 result = Utils::RadToMsoRad(fabs(v_atan));
             }
             else
             {
-                double v_atan = atan(y/x);
+                double v_atan = atan(static_cast<double>(y)/x);
                 result = Utils::RadToMsoRad(fabs(v_atan));
             }
 
