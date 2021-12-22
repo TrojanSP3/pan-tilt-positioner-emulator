@@ -10,6 +10,18 @@ const int TIMEOUT_MS=5000;
 const int TIMEOUT_INTERVAL=100;
 const int TIMEOUT_ITERATIONS=TIMEOUT_MS/TIMEOUT_INTERVAL;
 
+TCPServer::~TCPServer()
+{
+    Stop();
+
+    if(client_thread!=nullptr)
+    {
+        if(client_thread->joinable())
+            client_thread->join();
+        delete client_thread; client_thread=nullptr;
+    }
+}
+
 void TCPServer::Start(const int port)
 {
     Stop();

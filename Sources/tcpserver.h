@@ -11,6 +11,7 @@
 class TCPServer
 {
 public:
+    ~TCPServer();
     void Start(const int port);
     void Stop();
     bool IsOpen();
