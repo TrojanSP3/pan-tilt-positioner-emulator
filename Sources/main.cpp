@@ -116,7 +116,7 @@ void Main::PrintHelp(const std::string program)
     tmp="Protocols:";
     lines.push_back(tmp);
 
-    tmp=KEYWORD_PROTOCOL_MSO2+" - MSO2";
+    tmp=KEYWORD_PROTOCOL_MSO2+" - MSO2 Protocol";
     lines.push_back(tmp);
 
     for(auto it=lines.begin(); it!=lines.end(); it++)
@@ -174,7 +174,7 @@ bool Main::Start_Config(const std::string config_path)
         }
     }
 
-    LOG.Start(CONFIG::LOG::FILENAME.Get(),CONFIG::LOG::MAX_SIZE_BYTES.Get());
+    LOG.Start(CONFIG::LOG::FILENAME.Get(),static_cast<ssize_t>(CONFIG::LOG::MAX_SIZE_BYTES.Get()));
     LOG.WriteInfo(LOGMODULE,LOGNAME,VERSION);
     LOG.WriteDebug(LOGMODULE,LOGNAME,CONFIG::ToString());
     return true;
@@ -264,18 +264,18 @@ bool Main::Start_Loop(Protocol_Base& protocol)
                 std::string text_io_nums="|";
                 std::string text_i_stat="|";
                 std::string text_o_stat="|";
-                for(int i=current_state.inputs.size()-1;i>=0;--i)
+                for(int i=static_cast<int>(current_state.inputs.size())-1;i>=0;--i)
                 {
                     if(current_state.inputs.size()>=current_state.outputs.size())
                         text_io_nums+=(i<10?"0":"")+std::to_string(i)+"|";
-                    text_i_stat+=(current_state.inputs[i]?"ON|":"##|");
+                    text_i_stat+=(current_state.inputs[static_cast<size_t>(i)]?"ON|":"##|");
                 }
 
-                for(int i=current_state.outputs.size()-1;i>=0;--i)
+                for(int i=static_cast<int>(current_state.outputs.size())-1;i>=0;--i)
                 {
                     if(current_state.inputs.size()<current_state.outputs.size())
                         text_io_nums+=(i<10?"0":"")+std::to_string(i)+"|";
-                    text_o_stat+=(current_state.outputs[i]?"ON|":"##|");
+                    text_o_stat+=(current_state.outputs[static_cast<size_t>(i)]?"ON|":"##|");
                 }
 
                 std::string picture_header=
