@@ -128,7 +128,7 @@ void TestProtocolMSO2::Client_connected()
     MSO_State state = protocol.Tick();
 
     client.Close();
-    protocol.Tick();
+    state=protocol.Tick();
 
     ASSERT(state.tcp_last_got_data==MSG)
 }

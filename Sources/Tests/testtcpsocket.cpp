@@ -1,5 +1,7 @@
 #include "testtcpsocket.h"
 
+#include <cstring>
+
 #include "../TcpSocket/tcpserversocket.h"
 #include "../TcpSocket/tcpclientsocket.h"
 
@@ -215,7 +217,7 @@ void TestTcpSocket::GetClient()
     client.Close();
     client_get->Close();
     server.Stop();
-    //delete client_get;
+    delete client_get;
 }
 void TestTcpSocket::DropClient()
 {
@@ -285,6 +287,7 @@ void TestTcpSocket::WriteToClient_raw()
     client_get->Write(MESSAGE_DATA.c_str(),MESSAGE_LEN);
     TIMEOUT(client.BytesAvailable()==MESSAGE_LEN,LONG_TIMEOUT);
     char msgbuf[MESSAGE_LEN];
+    memset(&msgbuf,0,MESSAGE_LEN);
     client.Read(msgbuf,MESSAGE_LEN);
     std::string msg(msgbuf);
 
@@ -293,6 +296,7 @@ void TestTcpSocket::WriteToClient_raw()
     server.Stop();
     client.Close();
     client_get->Close();
+    delete client_get;
 }
 
 void TestTcpSocket::WriteToClient_line()
@@ -323,6 +327,7 @@ void TestTcpSocket::WriteToClient_line()
     server.Stop();
     client.Close();
     client_get->Close();
+    delete client_get;
 }
 
 void TestTcpSocket::ReadFromClient_raw()
@@ -354,6 +359,7 @@ void TestTcpSocket::ReadFromClient_raw()
     server.Stop();
     client.Close();
     client_get->Close();
+    delete client_get;
 }
 
 void TestTcpSocket::ReadFromClient_line()
@@ -384,6 +390,7 @@ void TestTcpSocket::ReadFromClient_line()
     server.Stop();
     client.Close();
     client_get->Close();
+    delete client_get;
 }
 
 
