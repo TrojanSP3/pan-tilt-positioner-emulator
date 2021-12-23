@@ -9,6 +9,7 @@
 #include "testexception.h"
 #include "testcase.h"
 #include "testclass.h"
+#include "testutilities.h"
 
 namespace UnitTests {
 

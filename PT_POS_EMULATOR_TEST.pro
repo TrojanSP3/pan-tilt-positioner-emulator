@@ -12,6 +12,7 @@ Sources/Tests/Framework/testclass.h \
 Sources/Tests/Framework/testexception.h \
 Sources/Tests/Framework/testcase.h \
 Sources/Tests/Framework/testsuite.h \
+Sources/Tests/Framework/testutilities.h \
 Sources/Tests/testutils.h \
 Sources/Tests/testtcpsocket.h \
 Sources/Tests/testlog.h \
@@ -38,6 +39,7 @@ Sources/protocol_base.h \
 Sources/protocol_mso2.h \
 
 
+
 SOURCES += \
 Sources/main_test.cpp \
 Sources/Tests/Framework/testframework.cpp \
@@ -45,6 +47,7 @@ Sources/Tests/Framework/testclass.cpp \
 Sources/Tests/Framework/testexception.cpp \
 Sources/Tests/Framework/testcase.cpp \
 Sources/Tests/Framework/testsuite.cpp \
+Sources/Tests/Framework/testutilities.cpp \
 Sources/Tests/testutils.cpp \
 Sources/Tests/testtcpsocket.cpp \
 Sources/Tests/testlog.cpp \
@@ -69,3 +72,4 @@ Sources/tcpserver.cpp \
 Sources/mso_state.cpp \
 Sources/protocol_base.cpp \
 Sources/protocol_mso2.cpp \
+

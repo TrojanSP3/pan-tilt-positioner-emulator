@@ -9,9 +9,6 @@ using namespace UnitTests;
 const std::string CLRF = "\r\n";
 const int TestProtocolMSO2::SHORT_SLEEP=100;
 const int TestProtocolMSO2::LONG_TIMEOUT=5000;
-const uint16_t TestProtocolMSO2::BASE_PORT=21000;
-uint16_t TestProtocolMSO2::PORT_CNT=0;
-//const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
 
 std::vector<TestCase> TestProtocolMSO2::GetTestCases()
 {
@@ -90,14 +87,14 @@ void TestProtocolMSO2::Create_Destroy()
 
 void TestProtocolMSO2::Init()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     Protocol_MSO2 protocol;
     protocol.Init(GetInitState(),PORT);
 }
 
 void TestProtocolMSO2::Init_ticks()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     Protocol_MSO2 protocol;
     MSO_State base_state = GetInitState();
     protocol.Init(base_state,PORT);
@@ -111,7 +108,7 @@ void TestProtocolMSO2::Init_ticks()
 
 void TestProtocolMSO2::Client_connected()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const std::string MSG = "hello";
 
     Protocol_MSO2 protocol;
@@ -137,7 +134,7 @@ void TestProtocolMSO2::Client_connected()
 
 void TestProtocolMSO2::Info_and_Voltage()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
 
     const int MSG_info_lines        = 11;
     const std::string MSG_info      = "info";
@@ -193,7 +190,7 @@ void TestProtocolMSO2::Info_and_Voltage()
 
 void TestProtocolMSO2::Azimuth_syn()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const int TIMEOUT_SEC = 60;
     const std::string MSG_syn      = "a syn\r\n";
 
@@ -233,7 +230,7 @@ void TestProtocolMSO2::Azimuth_syn()
 
 void TestProtocolMSO2::Azimuth_syn_fast()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const std::string MSG_syn      = "a syn\r\n";
 
     Protocol_MSO2 protocol;
@@ -257,7 +254,7 @@ void TestProtocolMSO2::Azimuth_syn_fast()
 
 void TestProtocolMSO2::Elevation_syn()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const int TIMEOUT_SEC = 60;
     const std::string MSG_syn      = "e syn\r\n";
 
@@ -297,7 +294,7 @@ void TestProtocolMSO2::Elevation_syn()
 
 void TestProtocolMSO2::Elevation_syn_fast()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const std::string MSG_syn      = "e syn\r\n";
 
     Protocol_MSO2 protocol;
@@ -322,7 +319,7 @@ void TestProtocolMSO2::Elevation_syn_fast()
 
 void TestProtocolMSO2::Positioning()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const int DIF_VALUE = 1000;
     const std::string MSG_syn      = "a syn\r\ne syn\r\n";
     const int POS_A_1 = +DIF_VALUE;
@@ -370,7 +367,7 @@ void TestProtocolMSO2::Positioning()
 
 void TestProtocolMSO2::Speed()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const int DIF_VALUE = 100;
     const std::string MSG_syn      = "a syn\r\ne syn\r\n";
     const int SPEED_A_1 = +DIF_VALUE;
@@ -418,7 +415,7 @@ void TestProtocolMSO2::Speed()
 
 void TestProtocolMSO2::Elevation_limits()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const int DIF_VALUE = 100;
     const std::string MSG_syn      = "a syn\r\ne syn\r\n";
     const int SPEED_E_1 = +DIF_VALUE;
@@ -531,7 +528,7 @@ void TestProtocolMSO2::Elevation_limits()
 
 void TestProtocolMSO2::Inputs_outputs()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
 
     TestFramework::LogMsg("Init 1 check");
     Inputs_outputs_init_1(PORT);
@@ -707,7 +704,7 @@ void TestProtocolMSO2::Period()
     const int A_POS = 10000;
     const int E_POS = CONFIG::ENGINE::ZERO_ELEVATION.Get()+3333;
 
-    const uint16_t PORT = BASE_PORT + PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
 
     Protocol_MSO2 protocol;
     MSO_State state = GetInitState();
@@ -767,7 +764,7 @@ MSO_State TestProtocolMSO2::ParsePeriodLine(std::string period_line)
 
 void TestProtocolMSO2::Reset()
 {
-    const uint16_t PORT = BASE_PORT + PORT_CNT+30; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const std::string MSG_RESET = "reset\r\n";
     CONFIG::CONTROLLER::AZIMUTH_SYNCED_ON_INIT.Set(false);
     CONFIG::CONTROLLER::ELEVATION_SYNCED_ON_INIT.Set(true);

@@ -5,11 +5,10 @@
 #include "../TcpSocket/tcpserversocket.h"
 #include "../TcpSocket/tcpclientsocket.h"
 
+
 using namespace UnitTests;
 
 const int TestTcpSocket::LONG_TIMEOUT=5000;
-const uint16_t TestTcpSocket::BASE_PORT = 20000;
-uint16_t TestTcpSocket::PORT_CNT = 0;
 
 const std::string LOCALHOST = "127.0.0.1";
 
@@ -35,7 +34,7 @@ std::vector<TestCase> TestTcpSocket::GetTestCases()
 
 void TestTcpSocket::StartAndInfinityListen()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     TestFramework::LogMsg(">>>Infinity listening test<<<");
     TcpServerSocket server;
     server.Start(PORT);
@@ -73,7 +72,7 @@ void TestTcpSocket::StartAndInfinityListen()
 
 void TestTcpSocket::Start_IsOpen_Stop()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     TcpServerSocket server;
     server.Start(PORT);
     ASSERT(server.IsListening());
@@ -83,7 +82,7 @@ void TestTcpSocket::Start_IsOpen_Stop()
 
 void TestTcpSocket::Start_Restart()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     TcpServerSocket server;
     server.Start(PORT);
     ASSERT(server.IsListening());
@@ -98,7 +97,7 @@ void TestTcpSocket::Start_Restart()
 
 void TestTcpSocket::SamePort()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     TcpServerSocket server_1;
     TcpServerSocket server_2;
 
@@ -126,7 +125,7 @@ void TestTcpSocket::SamePort()
 
 void TestTcpSocket::Rebind()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     TcpServerSocket server_1;
     TcpServerSocket server_2;
     TcpServerSocket server_3;
@@ -166,7 +165,7 @@ void TestTcpSocket::Rebind()
 
 void TestTcpSocket::ClientWrongAddress()
 {
-    const uint16_t GOOD_PORT = BASE_PORT;
+    const uint16_t GOOD_PORT = TestUtilities::TCP_GetFreePort();
     const uint16_t BAD_PORT = 0;
     const std::string BAD_PORT_MESSAGE = "port";
     const std::string GOOD_ADDRESS = "127.0.0.1";
@@ -200,7 +199,7 @@ void TestTcpSocket::ClientWrongAddress()
 
 void TestTcpSocket::GetClient()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
 
     TcpServerSocket server;
     server.Start(PORT);
@@ -221,7 +220,7 @@ void TestTcpSocket::GetClient()
 }
 void TestTcpSocket::DropClient()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
 
     TcpServerSocket server;
     TestFramework::LogMsg("Trying to start server");
@@ -268,7 +267,7 @@ void TestTcpSocket::DropClient()
 
 void TestTcpSocket::WriteToClient_raw()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
 
     const std::string MESSAGE_DATA = "No end of line!";
     const size_t MESSAGE_LEN = 15;
@@ -302,7 +301,7 @@ void TestTcpSocket::WriteToClient_raw()
 
 void TestTcpSocket::WriteToClient_line()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
 
     const std::string MESSAGE_DATA = "End of line ->";
     const std::string MESSAGE = MESSAGE_DATA+"\r\n";
@@ -333,7 +332,7 @@ void TestTcpSocket::WriteToClient_line()
 
 void TestTcpSocket::ReadFromClient_raw()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
 
     const std::string MESSAGE_DATA = "No end of line!";
     const size_t MESSAGE_LEN = 15;
@@ -367,7 +366,7 @@ void TestTcpSocket::ReadFromClient_raw()
 
 void TestTcpSocket::ReadFromClient_line()
 {
-    const uint16_t PORT = BASE_PORT+PORT_CNT; ++PORT_CNT;
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
 
     const std::string MESSAGE_DATA = "End of line ->";
     const std::string MESSAGE = MESSAGE_DATA+"\r\n";
