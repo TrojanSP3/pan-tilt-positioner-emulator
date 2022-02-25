@@ -3,7 +3,6 @@
 
 #include <string>
 #include <stdint.h>
-#include <unistd.h>
 
 #include "socketstatus.h"
 

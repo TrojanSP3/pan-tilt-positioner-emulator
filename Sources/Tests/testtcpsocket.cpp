@@ -214,10 +214,14 @@ void TestTcpSocket::GetClient()
     ASSERT(client_get->IsOpen());
 
     client.Close();
+    TIMEOUT(!client.IsOpen(),LONG_TIMEOUT);
+    TIMEOUT(!client_get->IsOpen(),LONG_TIMEOUT);
     client_get->Close();
+    TIMEOUT(!client_get->IsOpen(),LONG_TIMEOUT);
     server.Stop();
     delete client_get;
 }
+
 void TestTcpSocket::DropClient()
 {
     const uint16_t PORT = TestUtilities::TCP_GetFreePort();

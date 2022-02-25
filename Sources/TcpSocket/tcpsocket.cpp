@@ -4,6 +4,7 @@
 #include <netinet/tcp.h>
 #include <poll.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
 #include "tcpsocketexception.h"
 

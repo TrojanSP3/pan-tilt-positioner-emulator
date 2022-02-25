@@ -32,7 +32,7 @@ void TcpClientSocket::Close()
 bool TcpClientSocket::IsOpen()
 {
     SocketStatus status = clientSocket.GetStatus();
-    return !status.isClosed();
+    return !status.isClosed() && !status.isError();
 }
 
 int TcpClientSocket::BytesAvailable()

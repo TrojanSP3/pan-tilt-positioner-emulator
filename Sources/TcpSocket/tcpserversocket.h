@@ -1,11 +1,6 @@
 #ifndef TCPSERVERSOCKET_H
 #define TCPSERVERSOCKET_H
 
-#include <string>
-#include <atomic>
-#include <queue>
-#include <mutex>
-
 #include "tcpclientsocket.h"
 
 class TcpServerSocket
