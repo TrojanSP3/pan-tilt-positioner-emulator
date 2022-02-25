@@ -51,7 +51,7 @@ char TcpClientSocket::ReadByte()
     char result = 0;
     ssize_t res = Read(&result,1);
     if(res<=0)
-        TcpSocketException::ThrowErrnoException(errno);
+        throw TcpSocketException::CreateErrnoException(errno);
     return result;
 }
 
@@ -77,7 +77,7 @@ std::string TcpClientSocket::ReadLine()
         }
         else
         {
-            TcpSocketException::ThrowErrnoException(errno);
+            throw TcpSocketException::CreateErrnoException(errno);
         }
     }while(buffer_char!='\0' && buffer_char!='\n');
 
@@ -111,7 +111,7 @@ void TcpClientSocket::WriteLine(std::string data)
     ssize_t sended_bytes = Write(data.c_str(), data.length());
     if(sended_bytes<=0)
     {
-        TcpSocketException::ThrowErrnoException(errno);
+        throw TcpSocketException::CreateErrnoException(errno);
     }
 }
 

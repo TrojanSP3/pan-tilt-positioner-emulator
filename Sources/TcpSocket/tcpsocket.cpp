@@ -20,7 +20,7 @@ void TcpSocket::Create()
     descriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(descriptor==-1)
     {
-        TcpSocketException::ThrowErrnoException(errno);
+        throw TcpSocketException::CreateErrnoException(errno);
     }
 }
 
@@ -40,7 +40,7 @@ void TcpSocket::Connect(std::string ip, uint16_t port)
 
     if(connect(descriptor, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) < 0)
     {
-        TcpSocketException::ThrowErrnoException(errno);
+        throw TcpSocketException::CreateErrnoException(errno);
     }
 }
 
@@ -54,7 +54,7 @@ void TcpSocket::Bind(const uint16_t port)
     int not_binded = bind(descriptor,reinterpret_cast<struct sockaddr *>(&serverAddress), sizeof(serverAddress));
     if(not_binded)
     {
-        TcpSocketException::ThrowErrnoException(errno);
+        throw TcpSocketException::CreateErrnoException(errno);
     }
 }
 
@@ -63,7 +63,7 @@ void TcpSocket::Listen()
     int not_listening = listen(descriptor, MAX_PENDING_CONNECTIONS);
     if(not_listening)
     {
-        TcpSocketException::ThrowErrnoException(errno);
+        throw TcpSocketException::CreateErrnoException(errno);
     }
 }
 
@@ -75,7 +75,7 @@ TcpSocket TcpSocket::Accept()
 
     if(client_socket<=0)
     {
-        TcpSocketException::ThrowErrnoException(errno);
+        throw TcpSocketException::CreateErrnoException(errno);
     }
 
     return TcpSocket(client_socket);
@@ -102,14 +102,14 @@ void TcpSocket::Close(bool noexception)
         if(shutdown_failed && !noexception)
         {
             if(errno != ERRNO_107)
-                TcpSocketException::ThrowErrnoException(errno);
+                throw TcpSocketException::CreateErrnoException(errno);
         }
 
         int close_failed=close(descriptor);
         if(close_failed  && !noexception)
         {
             if(errno != ERRNO_107)
-                TcpSocketException::ThrowErrnoException(errno);
+                throw TcpSocketException::CreateErrnoException(errno);
         }
         descriptor=0;
     }

@@ -8,7 +8,7 @@ class TcpSocketException : public std::exception
 {
 public:
     static std::string ErrnoToString(int _errno);
-    static void ThrowErrnoException(int _errno);
+    static TcpSocketException CreateErrnoException(int _errno);
 public:
     TcpSocketException(std::string msg);
     const char* what() const noexcept;

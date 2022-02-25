@@ -11,10 +11,10 @@ std::string TcpSocketException::ErrnoToString(int _errno)
     return result;
 }
 
-void TcpSocketException::ThrowErrnoException(int _errno)
+TcpSocketException TcpSocketException::CreateErrnoException(int _errno)
 {
     std::string errorString = TcpSocketException::ErrnoToString(_errno);
-    throw TcpSocketException(errorString);
+    return TcpSocketException(errorString);
 }
 
 TcpSocketException::TcpSocketException(std::string msg)
