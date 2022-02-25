@@ -8,22 +8,23 @@
 class TcpSocket
 {
 public:
-    TcpSocket();
-    ~TcpSocket();
+    TcpSocket(int descriptor=0);
+    void Create();
     void Connect(std::string ip, uint16_t port);
     void Bind(const uint16_t port);
     void Listen();
+    TcpSocket Accept();
     ssize_t Read(char *data, uint64_t size);
     ssize_t Write(const char *data, uint64_t size);
-    void Close();
+    void Close(bool noexception=false);
 
+    int Id();
     bool IsSocketOpen();
     bool IsSocketError();
     bool IsTcpConnectionOpen();
 
     int AvailableBytes();
 protected:
-    void Create();
     void UpdateStatus();
     void GetStatusByPoll();
     void GetStatusByIoctl();

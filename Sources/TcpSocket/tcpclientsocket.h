@@ -2,28 +2,29 @@
 #define TCPCLIENTSOCKET_H
 
 #include "tcpsocketexception.h"
+#include "tcpsocket.h"
 
 class TcpClientSocket
 {
 public:
-    TcpClientSocket(int socket=0);
+    TcpClientSocket(TcpSocket socket);
     ~TcpClientSocket();
 
     void Open(std::string _ip, uint16_t _port);
     void Close();
-    bool IsOpen() const;
-    int BytesAvailable() const;
+    bool IsOpen();
+    int BytesAvailable();
 
     ssize_t Read(char *data, uint64_t size);
     char ReadByte();
     std::string ReadLine();
     ssize_t Write(const char *data, uint64_t size);
     void WriteLine(std::string data);
-    int Id() const;
+    int Id();
 private:
     static const int MAX_INPUT_BUFFER_SIZE=4096;
     std::string ReadString(bool crlf);
-    int clientSocket;
+    TcpSocket clientSocket;
 };
 
 #endif // TCPCLIENTSOCKET_H

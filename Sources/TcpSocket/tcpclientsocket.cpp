@@ -1,102 +1,43 @@
 #include "tcpclientsocket.h"
 
 #include <cstring>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <thread>
-#include <chrono>
 
-#include "socketstatus.h"
-
-TcpClientSocket::TcpClientSocket(int socket)
+TcpClientSocket::TcpClientSocket(TcpSocket socket)
 {
     clientSocket=socket;
 }
 
 TcpClientSocket::~TcpClientSocket()
 {
-    if(clientSocket>0)
-    {
-        shutdown(clientSocket, SHUT_RDWR);
-        close(clientSocket); 
-    }
+    clientSocket.Close(true);
 }
 
 void TcpClientSocket::Open(std::string ip, uint16_t port)
 {
-    if(IsOpen())
-        Close();
-
-    if(port<=0)
-        throw TcpSocketException("Wrong port");;
-
-    in_addr_t ipaddr = inet_addr(ip.c_str());
-    if(ipaddr == static_cast<in_addr_t>(-1))
-        throw TcpSocketException("Wrong host address");
-
-    struct sockaddr_in addr;
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = ipaddr;
-
-    clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if(clientSocket<=0)
-    {
-        TcpSocketException::ThrowErrnoException(errno);
-    }
-    if(connect(clientSocket, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) < 0)
-    {
-        TcpSocketException::ThrowErrnoException(errno);
-    }
-
+    if(clientSocket.IsSocketOpen())
+        clientSocket.Close();
+    clientSocket.Create();
+    clientSocket.Connect(ip,port);
 }
 
 void TcpClientSocket::Close()
 {
-    const int ERRNO_107 = 107; //Transport endpoint is not connected
-    if(clientSocket>0)
-    {
-        int shutdown_failed=shutdown(clientSocket, SHUT_RDWR);
-        if(shutdown_failed)
-        {
-            if(errno != ERRNO_107)
-                TcpSocketException::ThrowErrnoException(errno);
-        }
-
-        int close_failed=close(clientSocket);
-        if(close_failed)
-        {
-            if(errno != ERRNO_107)
-                TcpSocketException::ThrowErrnoException(errno);
-        }
-        clientSocket=0;
-        std::this_thread::sleep_for(std::chrono::milliseconds((5)));
-    }
+    clientSocket.Close();
 }
 
-bool TcpClientSocket::IsOpen() const
+bool TcpClientSocket::IsOpen()
 {
-    SocketStatus status(clientSocket);
-    return status.isValid();
+    return clientSocket.IsTcpConnectionOpen();
 }
 
-int TcpClientSocket::BytesAvailable() const
+int TcpClientSocket::BytesAvailable()
 {
-    SocketStatus status(clientSocket);
-    if(status.isValid())
-        return status.AvailableBytes();
-    return 0;
+    return clientSocket.AvailableBytes();
 }
 
 ssize_t TcpClientSocket::Read(char *data, uint64_t size)
 {
-    const int FLAGS = 0;
-    ssize_t result = recv(clientSocket, data, size, FLAGS);
-    return result;
+    return clientSocket.Read(data,size);
 }
 
 char TcpClientSocket::ReadByte()
@@ -156,8 +97,7 @@ std::string TcpClientSocket::ReadLine()
 
 ssize_t TcpClientSocket::Write(const char *data, uint64_t size)
 {
-    ssize_t sended_bytes = send(clientSocket, data, size, 0);
-    return sended_bytes;
+    return clientSocket.Write(data,size);
 }
 
 void TcpClientSocket::WriteLine(std::string data)
@@ -169,9 +109,9 @@ void TcpClientSocket::WriteLine(std::string data)
     }
 }
 
-int TcpClientSocket::Id() const
+int TcpClientSocket::Id()
 {
-    return clientSocket;
+    return clientSocket.Id();
 }
 
 

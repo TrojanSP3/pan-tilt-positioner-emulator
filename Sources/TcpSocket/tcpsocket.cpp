@@ -10,21 +10,21 @@
 const int ERRNO_107 = 107; //Transport endpoint is not connected
 const int MAX_PENDING_CONNECTIONS = 8;
 
-TcpSocket::TcpSocket()
+TcpSocket::TcpSocket(int descriptor)
 {
-    descriptor=0;
-    closed=true;
+    this->descriptor=descriptor;
+    closed= (descriptor<=0);
     readable=false;
     writable=false;
     errors=false;
 }
 
-TcpSocket::~TcpSocket()
+void TcpSocket::Create()
 {
-    if(descriptor>0)
+    descriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if(descriptor==-1)
     {
-        shutdown(descriptor, SHUT_RDWR);
-        close(descriptor);
+        TcpSocketException::ThrowErrnoException(errno);
     }
 }
 
@@ -71,6 +71,20 @@ void TcpSocket::Listen()
     }
 }
 
+TcpSocket TcpSocket::Accept()
+{
+    struct sockaddr_in client_address;
+    socklen_t addrlength = sizeof (struct sockaddr_in);
+    int client_socket = accept(descriptor, reinterpret_cast<struct sockaddr *>(&client_address), &addrlength);
+
+    if(client_socket<=0)
+    {
+        TcpSocketException::ThrowErrnoException(errno);
+    }
+
+    return TcpSocket(client_socket);
+}
+
 ssize_t TcpSocket::Read(char *data, uint64_t size)
 {
     const int FLAGS = 0;
@@ -84,25 +98,30 @@ ssize_t TcpSocket::Write(const char *data, uint64_t size)
     return sended_bytes;
 }
 
-void TcpSocket::Close()
+void TcpSocket::Close(bool noexception)
 {
     if(descriptor>0)
     {
         int shutdown_failed=shutdown(descriptor, SHUT_RDWR);
-        if(shutdown_failed)
+        if(shutdown_failed && !noexception)
         {
             if(errno != ERRNO_107)
                 TcpSocketException::ThrowErrnoException(errno);
         }
 
         int close_failed=close(descriptor);
-        if(close_failed)
+        if(close_failed  && !noexception)
         {
             if(errno != ERRNO_107)
                 TcpSocketException::ThrowErrnoException(errno);
         }
         descriptor=0;
     }
+}
+
+int TcpSocket::Id()
+{
+    return descriptor;
 }
 
 bool TcpSocket::IsSocketOpen()
@@ -139,7 +158,6 @@ bool TcpSocket::IsTcpConnectionOpen()
     return !closed && !errors && readable && writable;
 }
 
-
 int TcpSocket::AvailableBytes()
 {
     if(descriptor>0)
@@ -151,15 +169,6 @@ int TcpSocket::AvailableBytes()
        bytes=0;
     }
     return bytes;
-}
-
-void TcpSocket::Create()
-{
-    descriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if(descriptor==-1)
-    {
-        TcpSocketException::ThrowErrnoException(errno);
-    }
 }
 
 void TcpSocket::UpdateStatus()
