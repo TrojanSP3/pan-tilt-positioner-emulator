@@ -31,6 +31,19 @@
 *.out
 *.app
 
+#Project local files
+*.user
+*.sdf
+*.opensdf
+*.vcxproj.filters
+
+#Project local dirs
 build/
 Protocols/
-*.user
+LICENSE
+
+#In development
+MVS_Solution.sdf
+MVS_Solution.sln
+MVS_Solution.v11.suo
+
