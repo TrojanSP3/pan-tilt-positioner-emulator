@@ -19,7 +19,7 @@ namespace UnitTests {
 
     typedef std::vector<TestCase> TestFunctionType();
 
-    const TestFunctionType* TestList[] =
+    TestFunctionType* const TestList[] =
     {
         TestSuite::GetTestCases
         ,TestUtils::GetTestCases
