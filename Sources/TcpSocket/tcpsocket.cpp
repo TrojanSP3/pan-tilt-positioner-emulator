@@ -13,10 +13,6 @@ const int MAX_PENDING_CONNECTIONS = 8;
 TcpSocket::TcpSocket(int descriptor)
 {
     this->descriptor=descriptor;
-    closed= (descriptor<=0);
-    readable=false;
-    writable=false;
-    errors=false;
 }
 
 void TcpSocket::Create()
@@ -124,118 +120,7 @@ int TcpSocket::Id()
     return descriptor;
 }
 
-bool TcpSocket::IsSocketOpen()
+SocketStatus TcpSocket::GetStatus()
 {
-    return descriptor>0;
+    return SocketStatus(descriptor);
 }
-
-bool TcpSocket::IsSocketError()
-{
-    if(descriptor>0)
-    {
-        UpdateStatus();
-    }
-    else
-    {
-       errors=true;
-    }
-    return errors;
-}
-
-bool TcpSocket::IsTcpConnectionOpen()
-{
-    if(descriptor>0)
-    {
-        UpdateStatus();
-    }
-    else
-    {
-       closed=true;
-       errors=true;
-       readable=false;
-       writable=false;
-    }
-    return !closed && !errors && readable && writable;
-}
-
-int TcpSocket::AvailableBytes()
-{
-    if(descriptor>0)
-    {
-        UpdateStatus();
-    }
-    else
-    {
-       bytes=0;
-    }
-    return bytes;
-}
-
-void TcpSocket::UpdateStatus()
-{
-    GetStatusByPoll();
-    GetStatusByIoctl();
-    GetStatusByGetsockopt();
-}
-
-void TcpSocket::GetStatusByPoll()
-{
-    const int POLLING_TIMEOUT_MS=250;
-    pollfd fileDescriptor;
-    fileDescriptor.fd = descriptor;
-    fileDescriptor.events = POLLIN | POLLOUT | POLLPRI;
-    fileDescriptor.revents = 0;
-    int poll_result = poll(&fileDescriptor,1,POLLING_TIMEOUT_MS);
-
-    short poll_in = fileDescriptor.revents & POLLIN ;
-    //short poll_pri = fileDescriptor.revents & POLLPRI ;
-    short poll_out = fileDescriptor.revents & POLLOUT ;
-
-    short poll_err = fileDescriptor.revents & POLLERR ;
-    short poll_hup = fileDescriptor.revents & POLLHUP ;
-    short poll_nval = fileDescriptor.revents & POLLNVAL ;
-    short bad_events = poll_err | poll_hup | poll_nval;
-
-    readable = poll_in>0;
-    writable = poll_out>0;
-    errors = (bad_events>0) || (poll_result<0);
-}
-
-void TcpSocket::GetStatusByIoctl()
-{
-    int result=0;
-    int ioctl_result = ioctl(descriptor,FIONREAD,&result);
-    if(ioctl_result == 0 )
-        bytes = result;
-}
-
-void TcpSocket::GetStatusByGetsockopt()
-{
-    tcp_info info;
-    unsigned int size_info = sizeof(info);
-    int result = getsockopt(descriptor, SOL_TCP, TCP_INFO, &info, &size_info);
-    if(result==0)
-    {
-        switch(info.tcpi_state)
-        {
-        case TCP_FIN_WAIT1:
-        case TCP_FIN_WAIT2:
-        case TCP_TIME_WAIT:
-        case TCP_CLOSE:
-        case TCP_CLOSE_WAIT:
-        case TCP_CLOSING:
-            writable = false;
-            errors = false;
-            closed = true;
-            break;
-        default: break;
-        };
-    }
-    else
-    {
-        errors=true;
-    }
-}
-
-
-

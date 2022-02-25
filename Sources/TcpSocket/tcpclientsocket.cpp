@@ -2,6 +2,11 @@
 
 #include <cstring>
 
+TcpClientSocket::TcpClientSocket()
+{
+
+}
+
 TcpClientSocket::TcpClientSocket(TcpSocket socket)
 {
     clientSocket=socket;
@@ -14,8 +19,7 @@ TcpClientSocket::~TcpClientSocket()
 
 void TcpClientSocket::Open(std::string ip, uint16_t port)
 {
-    if(clientSocket.IsSocketOpen())
-        clientSocket.Close();
+    clientSocket.Close();
     clientSocket.Create();
     clientSocket.Connect(ip,port);
 }
@@ -27,12 +31,14 @@ void TcpClientSocket::Close()
 
 bool TcpClientSocket::IsOpen()
 {
-    return clientSocket.IsTcpConnectionOpen();
+    SocketStatus status = clientSocket.GetStatus();
+    return !status.isClosed();
 }
 
 int TcpClientSocket::BytesAvailable()
 {
-    return clientSocket.AvailableBytes();
+    SocketStatus status = clientSocket.GetStatus();
+    return status.AvailableBytes();
 }
 
 ssize_t TcpClientSocket::Read(char *data, uint64_t size)

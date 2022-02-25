@@ -14,7 +14,6 @@ public:
     const char* what() const noexcept;
 private:
     std::string message;
-
 };
 
 #endif // TCPSOCKETEXCEPTION_H

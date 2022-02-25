@@ -7,6 +7,7 @@
 class TcpClientSocket
 {
 public:
+    TcpClientSocket();
     TcpClientSocket(TcpSocket socket);
     ~TcpClientSocket();
 

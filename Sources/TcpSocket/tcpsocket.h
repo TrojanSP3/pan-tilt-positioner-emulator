@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <unistd.h>
 
+#include "socketstatus.h"
+
 class TcpSocket
 {
 public:
@@ -19,23 +21,15 @@ public:
     void Close(bool noexception=false);
 
     int Id();
-    bool IsSocketOpen();
-    bool IsSocketError();
-    bool IsTcpConnectionOpen();
+    SocketStatus GetStatus();
 
-    int AvailableBytes();
 protected:
-    void UpdateStatus();
     void GetStatusByPoll();
     void GetStatusByIoctl();
     void GetStatusByGetsockopt();
 private:
     int descriptor;
-    bool closed;
-    bool readable;
-    bool writable;
-    bool errors;
-    int bytes;
+
 };
 
 #endif // TCPSOCKET_H

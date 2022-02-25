@@ -23,6 +23,7 @@ Sources/Tests/testengine.h \
 Sources/Tests/testtcpserver.h \
 Sources/Tests/testprotocolmso2.h \
 Sources/TcpSocket/tcpsocketexception.h \
+Sources/TcpSocket/socketstatus.h \
 Sources/TcpSocket/tcpsocket.h \
 Sources/TcpSocket/tcpserversocket.h \
 Sources/TcpSocket/tcpclientsocket.h \
@@ -59,6 +60,7 @@ Sources/Tests/testengine.cpp \
 Sources/Tests/testtcpserver.cpp \
 Sources/Tests/testprotocolmso2.cpp \
 Sources/TcpSocket/tcpsocketexception.cpp \
+Sources/TcpSocket/socketstatus.cpp \
 Sources/TcpSocket/tcpsocket.cpp \
 Sources/TcpSocket/tcpserversocket.cpp \
 Sources/TcpSocket/tcpclientsocket.cpp \

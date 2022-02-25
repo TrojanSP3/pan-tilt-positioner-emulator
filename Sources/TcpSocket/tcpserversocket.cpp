@@ -26,19 +26,14 @@ void TcpServerSocket::Stop()
 
 bool TcpServerSocket::IsListening()
 {
-    if(serverSocket.IsSocketOpen())
-    {
-        return serverSocket.IsTcpConnectionOpen();
-    }
-    else
-    {
-        return false;
-    }
+    SocketStatus status = serverSocket.GetStatus();
+    return status.isValid();
 }
 
 bool TcpServerSocket::IsClientAvailable()
 {
-    return serverSocket.IsSocketOpen() && serverSocket.IsTcpConnectionOpen() && serverSocket.AvailableBytes()>0;
+    SocketStatus status = serverSocket.GetStatus();
+    return !status.isError() && status.isReadable();
 }
 
 TcpClientSocket* TcpServerSocket::AcceptClient()
