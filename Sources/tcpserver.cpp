@@ -14,12 +14,7 @@ TCPServer::~TCPServer()
 {
     Stop();
 
-    if(client_thread!=nullptr)
-    {
-        if(client_thread->joinable())
-            client_thread->join();
-        delete client_thread; client_thread=nullptr;
-    }
+
 }
 
 void TCPServer::Start(const uint16_t port)
@@ -30,6 +25,7 @@ void TCPServer::Start(const uint16_t port)
     isServerReadyToListen.store(false);
 
     server_thread=new std::thread(TCPServer::server_thread_procedure, this);
+    clients_thread = new std::thread(clients_thread_procedure, this);
 
     int cnt=0;
     while(!isServerReadyToListen.load())
@@ -49,11 +45,18 @@ void TCPServer::Start(const uint16_t port)
 void TCPServer::Stop()
 {
     server_thread_flag_stop.store(true);
+    serverSocket.Stop();
     if(server_thread!=nullptr)
     {
         if(server_thread->joinable())
             server_thread->join();
         delete server_thread; server_thread=nullptr;
+    }
+    if(clients_thread!=nullptr)
+    {
+        if(clients_thread->joinable())
+            clients_thread->join();
+        delete clients_thread; clients_thread=nullptr;
     }
     port=0;
 }
@@ -90,12 +93,9 @@ void TCPServer::Loop()
     const std::string LOGNAME="Loop";
     LOG.WriteInfo(LOGMODULE, LOGNAME, "Starting server");
 
-    TcpServerSocket server;
-    TcpClientSocket* client=nullptr;
-
     try
     {
-        server.Start(this->port);
+        serverSocket.Start(this->port);
     }
     catch(TcpSocketException& ex)
     {
@@ -108,76 +108,43 @@ void TCPServer::Loop()
 
     while(!server_thread_flag_stop.load())
     {
-        if(!server.IsListening())
+        if(!serverSocket.IsListening())
         {
             LOG.WriteError(LOGMODULE, LOGNAME, "Server closed");
             break;
         }
 
-        if( (client!=nullptr) && (!client->IsOpen()) )
+        if(serverSocket.IsClientAvailable())
         {
-            isClientPresent.store(false);
-            delete client; client=nullptr;
-        }
-
-        if(server.IsClientAvailable())
-        {
-            TcpClientSocket* possible_client = server.AcceptClient();
-
+            std::shared_ptr<TcpClientSocket> possible_client = serverSocket.AcceptClient();
             if( (possible_client!=nullptr) && (possible_client->IsOpen()))
             {
-                if(isClientPresent.load())
-                {
-                    LOG.WriteInfo(LOGMODULE, LOGNAME, "Dropping client...");
-                    possible_client->Close();
-                    delete possible_client; possible_client=nullptr;
-                }
-                else
-                {
-                    LOG.WriteInfo(LOGMODULE, LOGNAME, "Accepting client...");
-                    if( client!=nullptr )
-                    {
-                        client->Close();
-                        delete client; client=nullptr;
-                    }
-                    client=possible_client;
-                    if(client_thread!=nullptr)
-                    {
-                        client_thread->join();
-                        delete client_thread; client_thread=nullptr;
-                    }
+                tcpClientsMutex.lock();
+                tcpClients.push_back(possible_client);
+                tcpClientsMutex.unlock();
 
-                    client_thread = new std::thread(client_thread_procedure, this, client);
-                    isClientPresent.store(true);
-                }
+                LOG.WriteInfo(LOGMODULE, LOGNAME,
+                              "New client ["+std::to_string(possible_client->Id())+"]");
             }
         }
-        Utils::Sleep(100);
     }
     isServerReadyToListen.store(false);
 
-    if( client!=nullptr )
-    {
-        client->Close();
-        delete client; client=nullptr;
-        isClientPresent.store(false);
-    }
-
-    server.Stop();
+    serverSocket.Stop();
     LOG.WriteInfo(LOGMODULE, LOGNAME, "Successfully ended");
 }
 
-void TCPServer::client_thread_procedure(TCPServer* obj, TcpClientSocket* client)
+void TCPServer::clients_thread_procedure(TCPServer* obj)
 {
     const std::string LOGNAME="client_thread_procedure";
 
-    if( obj==nullptr || client==nullptr )
+    if( obj==nullptr )
         return;
 
     try
     {
-        Utils::SetThreadName("tcp_client");
-        obj->ProcessConnection(client);
+        Utils::SetThreadName("tcp_clients");
+        obj->LoopForClients();
     }
     catch(std::exception& ex)
     {
@@ -192,50 +159,89 @@ void TCPServer::client_thread_procedure(TCPServer* obj, TcpClientSocket* client)
 
 }
 
-void TCPServer::ProcessConnection(TcpClientSocket* client)
+void TCPServer::LoopForClients()
 {
-    const std::string LOGNAME="ProcessConnection";
-    int id_client=client->Id();
-    std::string log_client="["+std::to_string(id_client)+"] ";
-    LOG.WriteInfo(LOGMODULE,LOGNAME,log_client+"Connected");
+    const std::string LOGNAME="LoopForClients";
 
     while(!server_thread_flag_stop.load())
     {
-        while(client->BytesAvailable())
-        {
-            std::string data=client->ReadLine();
-            LOG.WriteDebug(LOGMODULE,LOGNAME,log_client+"Data from client: "+data);
-            TCPServer::AddToInputBuffer(data);
-            Utils::Sleep(10);
-        }
-
-        if(!client->IsOpen())
-        {
-            LOG.WriteInfo(LOGMODULE,LOGNAME,log_client+"Client disconnected");
-            break;
-        }
-
-        while(TCPServer::outputStringBuffer.size())
-        {
-            std::string data=TCPServer::GetFromOutputBuffer();
-            if(!data.empty())
-            {
-                LOG.WriteDebug(LOGMODULE,LOGNAME,log_client+"Data from server: "+data);
-                client->WriteLine(data);
-            }
-            Utils::Sleep(10);
-        }
-
+        ReceiveDataFromClients();
+        SendDataToClients();
         Utils::Sleep(10);
     }
-    client->Close();
-    LOG.WriteInfo(LOGMODULE,LOGNAME,log_client+"Ending");
 
+    CloseAllClients();
+}
+
+void TCPServer::ReceiveDataFromClients()
+{
+    const std::string LOGNAME="ReceiveDataFromClients";
+    if(!tcpClients.empty())
+    {
+        const std::lock_guard<std::mutex> lock(tcpClientsMutex);
+        for(size_t i=0; i<tcpClients.size(); ++i)
+        {
+            std::shared_ptr<TcpClientSocket> client = tcpClients[i];
+
+            const std::string logClientId=
+                    (client==nullptr? "null" : std::to_string(client->Id()));
+            const std::string logClientPrefix = "["+logClientId+"] ";
+
+            if(client==nullptr || !client->IsOpen())
+            {
+                LOG.WriteDebug(LOGMODULE,LOGNAME,
+                               logClientPrefix+"Client disconnected");
+                tcpClients.erase(tcpClients.begin()+static_cast<std::ptrdiff_t>(i));
+                --i;
+            }
+            else
+            {
+                while(client->BytesAvailable())
+                {
+                    std::string data=client->ReadLine();
+                    LOG.WriteDebug(LOGMODULE,LOGNAME,logClientPrefix+"Data: "+data);
+                    TCPServer::AddToInputBuffer(data);
+                }
+            }
+        }
+    }
+}
+
+void TCPServer::SendDataToClients()
+{
+    const std::string LOGNAME="SendDataToClients";
+    while(TCPServer::outputStringBuffer.size())
+    {
+        std::string data=TCPServer::GetFromOutputBuffer();
+        if(!data.empty())
+        {
+            LOG.WriteDebug(LOGMODULE,LOGNAME,"Data: "+data);
+            const std::lock_guard<std::mutex> lock(tcpClientsMutex);
+            for(size_t i=0; i<tcpClients.size(); ++i)
+            {
+                std::shared_ptr<TcpClientSocket> client = tcpClients[i];
+                if(client!=nullptr && client->IsOpen())
+                    client->WriteLine(data);
+            }
+        }
+        Utils::Sleep(10);
+    }
+}
+
+void TCPServer::CloseAllClients()
+{
+    const std::lock_guard<std::mutex> lock(tcpClientsMutex);
+    for(size_t i=0; i<tcpClients.size(); ++i)
+    {
+        if(tcpClients[i]!=nullptr)
+            tcpClients[i]->Close();
+    }
+    tcpClients.clear();
 }
 
 void TCPServer::Send(const std::string msg)
 {
-    if(isClientPresent.load())
+    if(IsClientPresent())
         TCPServer::AddToOutputBuffer(msg);
     else
     {
@@ -300,7 +306,7 @@ std::string TCPServer::GetFromOutputBuffer()
 {
     outputStringBufferMutex.lock();
     std::string result = "";
-    if(outputStringBuffer.size())
+    if(outputStringBuffer.size()>0)
     {
         result=outputStringBuffer.front();
         outputStringBuffer.pop();
@@ -311,5 +317,5 @@ std::string TCPServer::GetFromOutputBuffer()
 
 bool TCPServer::IsClientPresent() const
 {
-    return isClientPresent.load();
+    return tcpClients.size()>0;
 }

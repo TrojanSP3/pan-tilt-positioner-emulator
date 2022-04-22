@@ -101,59 +101,52 @@ Protocol_Base::Command Protocol_MSO2::RecognizeCommand(const std::string command
     const std::string LOGNAME="RecognizeCommand";
     Protocol_Base::Command result;
 
+    std::istringstream iss(command);
+    for (std::string token; std::getline(iss, token, DELIM); )
     {
-        std::istringstream iss(command);
-        for (std::string token; std::getline(iss, token, DELIM); )
-        {
-            result.parameters.push_back(move(token));
-        }
+        result.parameters.push_back(move(token));
     }
 
+    if(result.parameters.size())
     {
-        if(result.parameters.size())
+        std::string param_1 = result.parameters[0];
+        bool azimuth_command = (param_1 == WORD_A);
+        bool elevation_command = (param_1 == WORD_E);
+        bool serial_command = (param_1[0]  == WORD_SERIAL[0]);
+        if( (azimuth_command || elevation_command || serial_command)
+            && (result.parameters.size()>1))
         {
-            std::string param_1 = result.parameters[0];
-            bool azimuth_command = (param_1 == WORD_A);
-            bool elevation_command = (param_1 == WORD_E);
-            bool serial_command = (param_1[0]  == WORD_SERIAL[0]);
-            if( (azimuth_command || elevation_command || serial_command)
-                && (result.parameters.size()>1))
+            std::string param_2 = result.parameters[1];
+            std::string multi_word_command = param_1+DELIM+param_2;
+            std::unordered_map<std::string, Protocol_Base::CommandType>::const_iterator ptr = CommandMap.find(multi_word_command);
+            if(ptr != CommandMap.end())
             {
-                std::string param_2 = result.parameters[1];
-                std::string multi_word_command = param_1+DELIM+param_2;
-                std::unordered_map<std::string, Protocol_Base::CommandType>::const_iterator ptr = CommandMap.find(multi_word_command);
-                if(ptr != CommandMap.end())
-                {
-                     result.command=ptr->second;
-                }
+                 result.command=ptr->second;
             }
-            else
+        }
+        else
+        {
+            std::unordered_map<std::string, Protocol_Base::CommandType>::const_iterator ptr = CommandMap.find(param_1);
+            if(ptr != CommandMap.end())
             {
-                std::unordered_map<std::string, Protocol_Base::CommandType>::const_iterator ptr = CommandMap.find(param_1);
-                if(ptr != CommandMap.end())
-                {
-                     result.command=ptr->second;
-                }
+                 result.command=ptr->second;
             }
         }
     }
 
+    if(result.command==UNKNOWN)
     {
-        if(result.command==UNKNOWN)
+        std::string header="Unknown command: "+command+"\r\n";
+        std::string code_header="LENGTH="+std::to_string(command.length())+" CODE:\r\n";
+        std::string code="";
+        for(unsigned int i=0;i<command.length();++i)
         {
-            std::string header="Unknown command: "+command+"\r\n";
-            std::string code_header="LENGTH="+std::to_string(command.length())+" CODE:\r\n";
-            std::string code="";
-            for(unsigned int i=0;i<command.length();++i)
-            {
-                int val = command[i];
-                code+="["+std::to_string(val)+"] ";
-            }
-            std::string msg=header+code_header+code;
-            LOG.WriteError(LOGMODULE,LOGNAME,msg);
+            int val = command[i];
+            code+="["+std::to_string(val)+"] ";
         }
+        std::string msg=header+code_header+code;
+        LOG.WriteError(LOGMODULE,LOGNAME,msg);
     }
-
     return result;
 }
 
@@ -366,6 +359,7 @@ void Protocol_MSO2::ProcessTcpIncomingData()
     case Protocol_Base::PERIOD:
         Cmd_period(command);
         break;
+
     case Protocol_Base::INFO:
     {
         std::string L1 =">>type             mso-2, los";
@@ -398,6 +392,13 @@ void Protocol_MSO2::ProcessTcpIncomingData()
         tcp_server.Send(CreateAnswerString(L11));
         Utils::Sleep(5);
         state.tcp_last_sent_data = CreateAnswerString(L11);
+        break;
+    }
+
+    case Protocol_Base::SERIAL_SEND_DATA:
+    {
+        state.tcp_last_sent_data = command_line;
+        tcp_server.Send(command_line+CONFIG::CONTROLLER::ENDL.Get());
         break;
     }
 

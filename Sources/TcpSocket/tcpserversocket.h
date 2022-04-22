@@ -1,6 +1,8 @@
 #ifndef TCPSERVERSOCKET_H
 #define TCPSERVERSOCKET_H
 
+#include <memory>
+
 #include "tcpclientsocket.h"
 
 class TcpServerSocket
@@ -12,7 +14,7 @@ public:
     void Stop();
     bool IsListening();
     bool IsClientAvailable();
-    TcpClientSocket* AcceptClient();//Blockable
+    std::shared_ptr<TcpClientSocket> AcceptClient();//Blockable
 private:
     TcpSocket serverSocket;
 };

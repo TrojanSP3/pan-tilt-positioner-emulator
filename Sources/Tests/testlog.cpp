@@ -166,11 +166,11 @@ void TestLog::FileOverflow()
         logger.WriteDebug("X","Y",word);
     }
     TestFramework::LogMsg(std::to_string(WORDS_NUM)+"/"+std::to_string(WORDS_NUM));
-    if(LogFileSize()<MAX_SIZE)
+    /*if(LogFileSize()<MAX_SIZE)
     {
         TestFramework::LogMsg("Wait...");
         SLEEPMS(LONG_TIMEOUT);
-    }
+    }*/
     TIMEOUT(LogFileSize()<MAX_SIZE,LONG_TIMEOUT);
     TestFramework::LogMsg("Checking...");
     TIMEOUT(CheckDataInLogFile(KEYWORD),LONG_TIMEOUT);

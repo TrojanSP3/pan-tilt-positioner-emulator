@@ -18,7 +18,7 @@ std::vector<TestCase> TestTcpServer::GetTestCases()
     result.push_back(TESTCASE(Recv_IsDataAvailable));
     result.push_back(TESTCASE(ClientChanging));
     result.push_back(TESTCASE(Recv_3lines));
-    result.push_back(TESTCASE(TooManyClients));
+    result.push_back(TESTCASE(SeveralClients));
     result.push_back(TESTCASE(Start_Restart_With_Client));
     return result;
 }
@@ -223,12 +223,13 @@ void TestTcpServer::Recv_3lines()
     client.Close();
 }
 
-void TestTcpServer::TooManyClients()
+void TestTcpServer::SeveralClients()
 {
     const uint16_t PORT = TestUtilities::TCP_GetFreePort();
     const std::string TESTSTR_1 = "test1 str1\n";
     const std::string TESTSTR_2 = "test2 str2\n";
     const std::string TESTSTR_3 = "test3 str3\n";
+    const std::string TESTSTR_4 = "test4 str4\n";
 
     TCPServer server;
     server.Start(PORT);
@@ -249,8 +250,66 @@ void TestTcpServer::TooManyClients()
     client_1.WriteLine(TESTSTR_1);
     client_2.WriteLine(TESTSTR_2);
     client_3.WriteLine(TESTSTR_3);
-    TIMEOUT(!client_2.IsOpen(),LONG_TIMEOUT);
-    TIMEOUT(!client_3.IsOpen(),LONG_TIMEOUT);
+
+    TIMEOUT(server.IsDataAvailable(), LONG_TIMEOUT);
+    std::string lineFromClient1 = server.Recv();
+    TIMEOUT(server.IsDataAvailable(), LONG_TIMEOUT);
+    std::string lineFromClient2 = server.Recv();
+    TIMEOUT(server.IsDataAvailable(), LONG_TIMEOUT);
+    std::string lineFromClient3 = server.Recv();
+
+    ASSERT(lineFromClient1!=lineFromClient2);
+    ASSERT(lineFromClient1!=lineFromClient3);
+    ASSERT(lineFromClient2!=lineFromClient3);
+
+    lineFromClient1+="\n";
+    lineFromClient2+="\n";
+    lineFromClient3+="\n";
+
+    std::string tmp_compare;
+    tmp_compare = TESTSTR_1;
+    bool getLineFromClient1 =
+            lineFromClient1 == tmp_compare
+            || lineFromClient2 == tmp_compare
+            || lineFromClient3 == tmp_compare;
+
+    tmp_compare = TESTSTR_2;
+    bool getLineFromClient2 =
+            lineFromClient1 == tmp_compare
+            || lineFromClient2 == tmp_compare
+            || lineFromClient3 == tmp_compare;
+
+    tmp_compare = TESTSTR_3;
+    bool getLineFromClient3 =
+            lineFromClient1 == tmp_compare
+            || lineFromClient2 == tmp_compare
+            || lineFromClient3 == tmp_compare;
+
+    ASSERT(getLineFromClient1);
+    ASSERT(getLineFromClient2);
+    ASSERT(getLineFromClient3);
+
+    ASSERT(!server.IsDataAvailable());
+
+    server.Send(TESTSTR_4);
+
+    TIMEOUT(client_1.BytesAvailable()>0, LONG_TIMEOUT);
+    tmp_compare = client_1.ReadLine();
+    tmp_compare += "\n";
+    ASSERT(tmp_compare == TESTSTR_4);
+    ASSERT(client_1.BytesAvailable()==0);
+
+    TIMEOUT(client_2.BytesAvailable()>0, LONG_TIMEOUT);
+    tmp_compare = client_2.ReadLine();
+    tmp_compare += "\n";
+    ASSERT(tmp_compare == TESTSTR_4);
+    ASSERT(client_2.BytesAvailable()==0);
+
+    TIMEOUT(client_3.BytesAvailable()>0, LONG_TIMEOUT);
+    tmp_compare = client_3.ReadLine();
+    tmp_compare += "\n";
+    ASSERT(tmp_compare == TESTSTR_4);
+    ASSERT(client_3.BytesAvailable()==0);
 
     client_1.Close();
     client_2.Close();

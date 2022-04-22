@@ -19,7 +19,7 @@ namespace UnitTests
         static void Recv_IsDataAvailable();
         static void Recv_3lines();
         static void ClientChanging();
-        static void TooManyClients();
+        static void SeveralClients();
         static void Start_Restart_With_Client();
     private:
         static const int LONG_TIMEOUT;

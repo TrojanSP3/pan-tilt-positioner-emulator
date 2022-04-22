@@ -36,11 +36,11 @@ bool TcpServerSocket::IsClientAvailable()
     return !status.isError() && status.isReadable();
 }
 
-TcpClientSocket* TcpServerSocket::AcceptClient()
+std::shared_ptr<TcpClientSocket> TcpServerSocket::AcceptClient()
 {
     TcpSocket descriptor = serverSocket.Accept();
-    TcpClientSocket* client=new TcpClientSocket(descriptor);
-    return client;
+    std::shared_ptr<TcpClientSocket> result(new TcpClientSocket(descriptor));
+    return result;
 }
 
 

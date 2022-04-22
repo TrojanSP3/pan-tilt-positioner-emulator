@@ -26,6 +26,7 @@ namespace UnitTests {
         static void Inputs_outputs();
         static void Period();
         static void Reset();
+        static void SerialData();
     private:
         static void Inputs_outputs_init_1(const int port);
         static void Inputs_outputs_init_2(const int port);

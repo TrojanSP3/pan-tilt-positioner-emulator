@@ -2,12 +2,18 @@
 
 using namespace UnitTests;
 
-TestException::TestException(std::string msg, std::string _file, int _line)
+TestException::TestException(std::string msg, std::string _file="", int _line=0)
 {
-    message = "TestException: "+msg
-            +"\n at "+_file
-            +"\n line: "+std::to_string(_line);
-            //+"\n";
+    message = "TestException: "+msg;
+    if(_file!="")
+    {
+        message+="\n at "+_file;
+        if(_line)
+        {
+            message+="\n line: "+std::to_string(_line);
+        }
+    }
+    //+"\n";
 }
 TestException::~TestException()
 {

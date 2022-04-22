@@ -29,7 +29,7 @@ std::vector<TestCase> TestProtocolMSO2::GetTestCases()
     result.push_back(TESTCASE(Inputs_outputs));
     result.push_back(TESTCASE(Period));
     result.push_back(TESTCASE(Reset));
-
+    result.push_back(TESTCASE(SerialData));
     return result;
 }
 
@@ -794,3 +794,39 @@ void TestProtocolMSO2::Reset()
     client.Close();
 }
 
+void TestProtocolMSO2::SerialData()
+{
+    const uint16_t PORT = TestUtilities::TCP_GetFreePort();
+    const std::string MSG = "s1 data 5 hello";
+
+    Protocol_MSO2 protocol;
+    protocol.Init(GetInitState(),PORT);
+    protocol.Tick();
+
+    TcpClientSocket client1;
+    client1.Open("127.0.0.1",PORT);
+    TcpClientSocket client2;
+    client2.Open("127.0.0.1",PORT);
+
+    protocol.Tick();
+
+    TIMEOUT(client1.IsOpen(),LONG_TIMEOUT);
+    TIMEOUT(client2.IsOpen(),LONG_TIMEOUT);
+    client1.WriteLine(MSG+CLRF);
+    SLEEPMS(SHORT_SLEEP);
+    MSO_State state = protocol.Tick();
+
+    TIMEOUT(client1.BytesAvailable()>0,LONG_TIMEOUT);
+    TIMEOUT(client2.BytesAvailable()>0,LONG_TIMEOUT);
+
+    std::string received = client1.ReadLine();
+    ASSERT(MSG==received);
+    received = client2.ReadLine();
+    ASSERT(MSG==received);
+    ASSERT(state.tcp_last_got_data==MSG);
+    ASSERT(state.tcp_last_sent_data==MSG);
+
+    client1.Close();
+    client2.Close();
+    state=protocol.Tick();
+}

@@ -45,7 +45,7 @@ void TestTcpSocket::StartAndInfinityListen()
         if(server.IsClientAvailable())
         {
             TestFramework::LogMsg(">Getting new client...");
-            TcpClientSocket* client= server.AcceptClient();
+            std::shared_ptr<TcpClientSocket> client= server.AcceptClient();
             TestFramework::LogMsg(">Ready to read");
             while(client->IsOpen())
             {
@@ -62,7 +62,6 @@ void TestTcpSocket::StartAndInfinityListen()
             }
             TestFramework::LogMsg(">Client lost...");
             client->Close();
-            delete client;
         }
         SLEEPMS(100);
     }
@@ -210,7 +209,7 @@ void TestTcpSocket::GetClient()
     ASSERT(client.IsOpen());
 
     TIMEOUT(server.IsClientAvailable(),LONG_TIMEOUT);
-    TcpClientSocket* client_get = server.AcceptClient();
+    std::shared_ptr<TcpClientSocket> client_get = server.AcceptClient();
     ASSERT(client_get->IsOpen());
 
     client.Close();
@@ -219,7 +218,6 @@ void TestTcpSocket::GetClient()
     client_get->Close();
     TIMEOUT(!client_get->IsOpen(),LONG_TIMEOUT);
     server.Stop();
-    delete client_get;
 }
 
 void TestTcpSocket::DropClient()
@@ -238,7 +236,7 @@ void TestTcpSocket::DropClient()
 
     TIMEOUT(server.IsClientAvailable(),LONG_TIMEOUT);
 
-    TcpClientSocket* client1_get = server.AcceptClient();
+    std::shared_ptr<TcpClientSocket> client1_get = server.AcceptClient();
 
     ASSERT(client1_get->IsOpen());
 
@@ -255,7 +253,7 @@ void TestTcpSocket::DropClient()
 
     TIMEOUT(server.IsClientAvailable(),LONG_TIMEOUT);
 
-    TcpClientSocket* client2_get = server.AcceptClient();
+    std::shared_ptr<TcpClientSocket> client2_get = server.AcceptClient();
 
     ASSERT(client2_get->IsOpen());
     client2_get->Close();
@@ -265,8 +263,6 @@ void TestTcpSocket::DropClient()
     client2.Close();
 
     server.Stop();
-    delete client1_get;
-    delete client2_get;
 }
 
 void TestTcpSocket::WriteToClient_raw()
@@ -285,7 +281,7 @@ void TestTcpSocket::WriteToClient_raw()
     client.Open(LOCALHOST,PORT);
     ASSERT(client.IsOpen());
     TIMEOUT(server.IsClientAvailable(),LONG_TIMEOUT);
-    TcpClientSocket* client_get = server.AcceptClient();
+    std::shared_ptr<TcpClientSocket> client_get = server.AcceptClient();
     ASSERT(client_get->IsOpen());
 
     client_get->Write(MESSAGE_DATA.c_str(),MESSAGE_LEN);
@@ -300,7 +296,6 @@ void TestTcpSocket::WriteToClient_raw()
     server.Stop();
     client.Close();
     client_get->Close();
-    delete client_get;
 }
 
 void TestTcpSocket::WriteToClient_line()
@@ -319,7 +314,7 @@ void TestTcpSocket::WriteToClient_line()
     client.Open(LOCALHOST,PORT);
     ASSERT(client.IsOpen());
     TIMEOUT(server.IsClientAvailable(),LONG_TIMEOUT);
-    TcpClientSocket* client_get = server.AcceptClient();
+    std::shared_ptr<TcpClientSocket> client_get = server.AcceptClient();
     ASSERT(client_get->IsOpen());
 
     client_get->WriteLine(MESSAGE);
@@ -331,7 +326,6 @@ void TestTcpSocket::WriteToClient_line()
     server.Stop();
     client.Close();
     client_get->Close();
-    delete client_get;
 }
 
 void TestTcpSocket::ReadFromClient_raw()
@@ -351,7 +345,7 @@ void TestTcpSocket::ReadFromClient_raw()
     client.Open(LOCALHOST,PORT);
     ASSERT(client.IsOpen());
     TIMEOUT(server.IsClientAvailable(),LONG_TIMEOUT);
-    TcpClientSocket* client_get = server.AcceptClient();
+    std::shared_ptr<TcpClientSocket> client_get = server.AcceptClient();
     ASSERT(client_get->IsOpen());
 
     client.Write(MESSAGE_DATA.c_str(),MESSAGE_LEN);
@@ -365,7 +359,6 @@ void TestTcpSocket::ReadFromClient_raw()
     server.Stop();
     client.Close();
     client_get->Close();
-    delete client_get;
 }
 
 void TestTcpSocket::ReadFromClient_line()
@@ -384,7 +377,7 @@ void TestTcpSocket::ReadFromClient_line()
     client.Open(LOCALHOST,PORT);
     ASSERT(client.IsOpen());
     TIMEOUT(server.IsClientAvailable(),LONG_TIMEOUT);
-    TcpClientSocket* client_get = server.AcceptClient();
+    std::shared_ptr<TcpClientSocket> client_get = server.AcceptClient();
     ASSERT(client_get->IsOpen());
 
     client.WriteLine(MESSAGE);
@@ -396,7 +389,6 @@ void TestTcpSocket::ReadFromClient_line()
     server.Stop();
     client.Close();
     client_get->Close();
-    delete client_get;
 }
 
 

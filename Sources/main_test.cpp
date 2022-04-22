@@ -17,14 +17,14 @@ int main(int argc, char *argv[])
     LOG.Start(CONFIG::LOG::TEST_FILENAME.Get());
 
     /*
-    std::vector<UnitTests::TestCase> TestList = UnitTests::TestTcpSocket::GetTestCases();
-    //for(int i=0; i<14;++i)
-        //TestList.erase(TestList.begin());
+    std::vector<UnitTests::TestCase> TestList = UnitTests::TestProtocolMSO2::GetTestCases();
+    for(int i=0; i<15;++i)
+        TestList.erase(TestList.begin());
     bool test_result = UnitTests::TestFramework::RunTestList(TestList);
     //*/
 
     bool test_result = UnitTests::TestFramework::RunAllTests();
-    std::cout<<"Finished"<<std::endl;
+    std::cout<<std::endl<<"Program finished"<<std::endl;
     if(test_result)
         return EXIT_SUCCESS;
     else
