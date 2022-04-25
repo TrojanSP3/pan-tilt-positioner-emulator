@@ -1,12 +1,12 @@
 #ifndef LOG_H
 #define LOG_H
+#include "crossplatform.h"
 
-#include <string>
 #include <atomic>
+#include <fstream>
 #include <thread>
 #include <mutex>
 #include <queue>
-#include <fstream>
 
 class Log;
 extern Log LOG;
@@ -15,6 +15,7 @@ class Log
 {
     class LogFile;
 public:
+    Log();
     ~Log();
     void Start(std::string filename, ssize_t max_file_size=10*1024*1014);
     void Stop();
@@ -30,7 +31,7 @@ private:
     void FlushQueueToFile();
 
     static void log_thread_procedure(Log* obj);
-    std::thread* log_thread=nullptr;
+    std::thread* log_thread;
     std::atomic<bool> log_thread_flag_stop;
     std::queue<std::string> log_queue;
     std::mutex log_queue_mutex;
@@ -38,6 +39,7 @@ private:
     class LogFile
     {
     public:
+		LogFile();
         ~LogFile();
         void SetFileName(std::string name);
         void SetFileSize(ssize_t size);
@@ -54,7 +56,7 @@ private:
         void CloseFile();
     private:
         std::fstream file;
-        std::string file_name="";
+        std::string file_name;
         ssize_t max_file_size;
     } logFile;
 };

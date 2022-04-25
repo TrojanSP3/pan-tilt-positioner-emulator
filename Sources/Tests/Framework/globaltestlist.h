@@ -1,8 +1,6 @@
 #ifndef GLOBALTESTLIST_H
 #define GLOBALTESTLIST_H
 
-#include <vector>
-
 #include "testcase.h"
 #include "testsuite.h"
 #include "../testutils.h"

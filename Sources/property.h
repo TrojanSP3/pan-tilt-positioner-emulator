@@ -1,12 +1,13 @@
 #ifndef PROPERTY_TEMLATE_H
 #define PROPERTY_TEMLATE_H
 
-#include <string>
 #include <atomic>
+#include <string>
 
 class PropertyBase
 {
 public:
+    virtual ~PropertyBase() {}
     virtual void SetFromString (const std::string &s) = 0;
     virtual std::string GetString() const = 0;
 };

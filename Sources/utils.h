@@ -9,6 +9,8 @@ public:
     static void Sleep(const int time_ms);
     static void ClearScreen();
     static void SetThreadName(const std::string name);
+	static std::string GetDirectoryFromARGV0(const char* argv0);
+	static void ChangeWorkingDirectory(const std::string path);
 
     static double RadToDegrees(const double rad);
     static double DegreesToRad(const double deg);
@@ -17,7 +19,7 @@ public:
     static int RadToMsoRad(const double rad);
     static int DegreesToMsoRad(const double deg);
 
-    static std::string GetCurrentTime();
+    static std::string GetCurrentTimeAsString();
 
     static void Ltrim(std::string &s);
     static void Rtrim(std::string &s);

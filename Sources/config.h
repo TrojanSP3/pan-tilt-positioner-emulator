@@ -1,6 +1,5 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-
 #include "property.h"
 #include "utils.h"
 

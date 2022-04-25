@@ -1,13 +1,11 @@
 #include "drawing.h"
 
-#include <stdexcept>
-#include <cmath>
-#include "math.h"
-#include <sstream>
-
 #include "config.h"
 #include "utils.h"
 #include "log.h"
+
+#include <cmath>
+#include <sstream>
 
 #define DRAWING_DEBUG
 #undef DRAWING_DEBUG
@@ -74,8 +72,27 @@ inline int ConvertPointToMSOUnits(int i, int j, int field_size)
     return result;
 }
 
+Drawing::Drawing()
+{
+	need_update_azimuth_char_map = true;
+    need_update_elevation_char_map = true;
+    current_azimuth=0;
+    current_elevation=0;
+    char_map_azimuth=nullptr;
+    char_map_elevation=nullptr;
+    char_map_azimuth_height=0;
+    char_map_azimuth_width=0;
+    char_map_elevation_height=0;
+    char_map_elevation_width=0;
+    precision_in_mso2_units=0;
+    sqr_diff_from_center_to_draw_circle_min=0;
+    sqr_diff_from_center_to_draw_circle_max=0;
+}
+
 Drawing::Drawing(int picture_height)
 {
+	Drawing();
+
     const int MIN_FIELD_SIZE = 3;
     if(picture_height<=MIN_FIELD_SIZE)
     {

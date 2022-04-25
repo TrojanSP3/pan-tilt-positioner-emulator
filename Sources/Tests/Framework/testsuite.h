@@ -1,6 +1,5 @@
 #ifndef TESTSUITE
 #define TESTSUITE
-
 #include "testframework.h"
 
 namespace UnitTests {

@@ -1,15 +1,25 @@
 #include "testutilities.h"
+#include "../../crossplatform.h"
+#include "../../TcpSocket/tcpsocket.h"
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <unistd.h>
+#ifdef WINDOWS_PLATFORM
+#include <winsock2.h>
+inline int close(_In_ SOCKET s)
+{
+	return closesocket(s);
+}
+#else
+	#include <netinet/in.h>
+	#include <unistd.h>
+#endif
+
+
 
 using namespace UnitTests;
 
 uint16_t TestUtilities::TCP_GetFreePort()
 {
+	
     int socket_value = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(socket_value<=0)
     {

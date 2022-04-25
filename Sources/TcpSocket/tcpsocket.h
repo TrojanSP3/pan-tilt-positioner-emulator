@@ -1,10 +1,8 @@
 #ifndef TCPSOCKET_H
 #define TCPSOCKET_H
-
-#include <string>
-#include <stdint.h>
-
+#include "../crossplatform.h"
 #include "socketstatus.h"
+#include "tcpsocketexception.h"
 
 class TcpSocket
 {
@@ -15,8 +13,8 @@ public:
     void Bind(const uint16_t port);
     void Listen();
     TcpSocket Accept();
-    ssize_t Read(char *data, uint64_t size);
-    ssize_t Write(const char *data, uint64_t size);
+    ssize_t Read(char *data, size_t size);
+    ssize_t Write(const char *data, size_t size);
     void Close(bool noexception=false);
 
     int Id();

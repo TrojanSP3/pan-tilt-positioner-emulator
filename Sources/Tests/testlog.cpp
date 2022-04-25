@@ -70,9 +70,9 @@ size_t TestLog::LogFileSize()
     }
     std::ifstream file(FILENAME());
     file.seekg(0,std::ios_base::end);
-    long stream_status = file.tellg();
+    std::ifstream::pos_type stream_status = file.tellg();
     size_t size = 0;
-    if(stream_status!=-1)
+    if(stream_status!= static_cast<std::ifstream::pos_type>(-1))
         size = static_cast<size_t>(stream_status);
     else
         size = 0;

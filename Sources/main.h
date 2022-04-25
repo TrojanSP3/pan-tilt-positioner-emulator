@@ -1,7 +1,5 @@
 #ifndef MAIN_H
 #define MAIN_H
-
-#include <string>
 #include "protocol_base.h"
 
 class Main
@@ -9,7 +7,7 @@ class Main
 public:
     static int main(int argc, char **argv);
 private:
-    Main()=delete;
+    Main() {}
     static void ChangeWorkingDir(char *argv_0);
     static void PrintHelp(const std::string program);
     static bool Start_Config(const std::string config_path);

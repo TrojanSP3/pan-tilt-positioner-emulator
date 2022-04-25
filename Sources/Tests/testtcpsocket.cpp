@@ -1,7 +1,16 @@
 #include "testtcpsocket.h"
+#include "../crossplatform.h"
+
+#ifdef WINDOWS_PLATFORM
+#include <winsock2.h>
+const int ERROR_ADDRESS_IN_USE = WSAEADDRINUSE;
+#else
+const int ERROR_ADDRESS_IN_USE = 98;
+#endif
 
 #include <cstring>
 
+#include "../TcpSocket/tcpsocketexception.h"
 #include "../TcpSocket/tcpserversocket.h"
 #include "../TcpSocket/tcpclientsocket.h"
 
@@ -107,11 +116,9 @@ void TestTcpSocket::SamePort()
         server_2.Start(PORT);
         EXCEPTION("Exception must be thrown here");
     }
-    catch(TcpSocketException& ex)
+    catch(TcpSocketException&)
     {
-        const std::string substr= "98: Address already in use";
-        std::string msg=ex.what();
-        if(msg.find(substr)==std::string::npos)
+        if(TcpSocketException::GetLastErrorCode()!=ERROR_ADDRESS_IN_USE)
         {
             TestFramework::LogMsg("Wrong exception");
             throw;
@@ -136,12 +143,13 @@ void TestTcpSocket::Rebind()
         server_2.Start(PORT);
         EXCEPTION("Exception must be thrown here");
     }
-    catch(TcpSocketException& ex)
+    catch(TcpSocketException&)
     {
-        const std::string substr= "98: Address already in use";
-        std::string msg=ex.what();
-        if(msg.find(substr)==std::string::npos)
+        if(TcpSocketException::GetLastErrorCode()!=ERROR_ADDRESS_IN_USE)
+        {
+            TestFramework::LogMsg("Wrong exception");
             throw;
+        }
     }
 
     server_1.Stop();
@@ -286,7 +294,8 @@ void TestTcpSocket::WriteToClient_raw()
 
     client_get->Write(MESSAGE_DATA.c_str(),MESSAGE_LEN);
     TIMEOUT(static_cast<size_t>(client.BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
-    char msgbuf[MESSAGE_LEN];
+    char msgbuf[MESSAGE_LEN+1];
+	msgbuf[MESSAGE_LEN]='\0';
     memset(&msgbuf,0,MESSAGE_LEN);
     client.Read(msgbuf,MESSAGE_LEN);
     std::string msg(msgbuf);
@@ -350,7 +359,8 @@ void TestTcpSocket::ReadFromClient_raw()
 
     client.Write(MESSAGE_DATA.c_str(),MESSAGE_LEN);
     TIMEOUT(static_cast<size_t>(client_get->BytesAvailable())==MESSAGE_LEN,LONG_TIMEOUT);
-    char msgbuf[MESSAGE_LEN];
+    char msgbuf[MESSAGE_LEN+1];
+	msgbuf[MESSAGE_LEN]='\0';
     client_get->Read(msgbuf,MESSAGE_LEN);
     std::string msg(msgbuf);
 

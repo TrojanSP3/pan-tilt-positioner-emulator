@@ -1,14 +1,18 @@
 #include "tcpsocket.h"
-
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
-#include <poll.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-
+#include "../crossplatform.h"
 #include "tcpsocketexception.h"
 
-const int ERRNO_107 = 107; //Transport endpoint is not connected
+#ifdef WINDOWS_PLATFORM
+#include <winsock2.h>
+inline int close(_In_ SOCKET s)
+{
+	return closesocket(s);
+}
+#else
+#include <arpa/inet.h>
+#include <unistd.h>
+#endif
+
 const int MAX_PENDING_CONNECTIONS = 8;
 
 TcpSocket::TcpSocket(int descriptor)
@@ -20,9 +24,10 @@ void TcpSocket::Create()
 {
     descriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(descriptor==-1)
-    {
-        throw TcpSocketException::CreateErrnoException(errno);
-    }
+	{
+		int error_code = TcpSocketException::GetLastErrorCode();
+		throw TcpSocketException::CreateErrorException(error_code);
+	}
 }
 
 void TcpSocket::Connect(std::string ip, uint16_t port)
@@ -40,9 +45,10 @@ void TcpSocket::Connect(std::string ip, uint16_t port)
     addr.sin_addr.s_addr = ipaddr;
 
     if(connect(descriptor, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) < 0)
-    {
-        throw TcpSocketException::CreateErrnoException(errno);
-    }
+	{
+		int error_code = TcpSocketException::GetLastErrorCode();
+		throw TcpSocketException::CreateErrorException(error_code);
+	}
 }
 
 void TcpSocket::Bind(const uint16_t port)
@@ -54,18 +60,20 @@ void TcpSocket::Bind(const uint16_t port)
 
     int not_binded = bind(descriptor,reinterpret_cast<struct sockaddr *>(&serverAddress), sizeof(serverAddress));
     if(not_binded)
-    {
-        throw TcpSocketException::CreateErrnoException(errno);
-    }
+	{
+		int error_code = TcpSocketException::GetLastErrorCode();
+		throw TcpSocketException::CreateErrorException(error_code);
+	}
 }
 
 void TcpSocket::Listen()
 {
     int not_listening = listen(descriptor, MAX_PENDING_CONNECTIONS);
     if(not_listening)
-    {
-        throw TcpSocketException::CreateErrnoException(errno);
-    }
+	{
+		int error_code = TcpSocketException::GetLastErrorCode();
+		throw TcpSocketException::CreateErrorException(error_code);
+	}
 }
 
 TcpSocket TcpSocket::Accept()
@@ -75,21 +83,22 @@ TcpSocket TcpSocket::Accept()
     int client_socket = accept(descriptor, reinterpret_cast<struct sockaddr *>(&client_address), &addrlength);
 
     if(client_socket<=0)
-    {
-        throw TcpSocketException::CreateErrnoException(errno);
-    }
+	{
+		int error_code = TcpSocketException::GetLastErrorCode();
+		throw TcpSocketException::CreateErrorException(error_code);
+	}
 
     return TcpSocket(client_socket);
 }
 
-ssize_t TcpSocket::Read(char *data, uint64_t size)
+ssize_t TcpSocket::Read(char *data, size_t size)
 {
     const int FLAGS = 0;
     ssize_t result = recv(descriptor, data, size, FLAGS);
     return result;
 }
 
-ssize_t TcpSocket::Write(const char *data, uint64_t size)
+ssize_t TcpSocket::Write(const char *data, size_t size)
 {
     ssize_t sended_bytes = send(descriptor, data, size, 0);
     return sended_bytes;
@@ -102,15 +111,22 @@ void TcpSocket::Close(bool noexception)
         int shutdown_failed=shutdown(descriptor, SHUT_RDWR);
         if(shutdown_failed && !noexception)
         {
-            if(errno != ERRNO_107)
-                throw TcpSocketException::CreateErrnoException(errno);
+			int error_code = TcpSocketException::GetLastErrorCode();
+            if(error_code != ERROR_NO_ENDPOINT)
+			{
+				throw TcpSocketException::CreateErrorException(error_code);
+			}
         }
 
-        int close_failed=close(descriptor);
+		int close_failed=close(descriptor);
+
         if(close_failed  && !noexception)
         {
-            if(errno != ERRNO_107)
-                throw TcpSocketException::CreateErrnoException(errno);
+            int error_code = TcpSocketException::GetLastErrorCode();
+            if(error_code != ERROR_NO_ENDPOINT)
+			{
+				throw TcpSocketException::CreateErrorException(error_code);
+			}
         }
         descriptor=0;
     }

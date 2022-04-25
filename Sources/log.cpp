@@ -1,11 +1,11 @@
 #include "log.h"
 
-#include <iostream>
-#include <sstream>
-#include <list>
-#include <sys/stat.h>
-
 #include "utils.h"
+
+#include <iostream>
+#include <list>
+#include <sstream>
+#include <sys/stat.h>
 
 Log LOG;
 
@@ -52,6 +52,12 @@ void Log::Stop()
     }
 }
 
+Log::Log()
+{
+	log_thread=nullptr;
+
+}
+
 Log::~Log()
 {
     Stop();
@@ -77,7 +83,7 @@ void Log::WriteCrit(std::string module, std::string method, std::string message)
 void Log::AddToQueue(Log::TYPE type, std::string module, std::string method, std::string message)
 {
     const std::string UNKNOWN = "UNKNOWN";
-    std::string formatted_datetime=Utils::GetCurrentTime();
+    std::string formatted_datetime=Utils::GetCurrentTimeAsString();
     std::string formatted_type=TYPENAME[type];
     std::string formatted_module=module.empty() ? UNKNOWN : module;
     std::string formatted_method=method.empty() ? UNKNOWN : method;
@@ -137,6 +143,10 @@ void Log::FlushQueueToFile()
 
 
 
+Log::LogFile::LogFile()
+{
+	file_name="";
+}
 
 Log::LogFile::~LogFile()
 {

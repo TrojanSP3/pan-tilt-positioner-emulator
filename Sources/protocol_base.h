@@ -1,11 +1,7 @@
 #ifndef PROTOCOL_BASE_H
 #define PROTOCOL_BASE_H
-
-#include <vector>
-#include <string>
-
-#include "mso_state.h"
 #include "engine.h"
+#include "mso_state.h"
 #include "tcpserver.h"
 
 class Protocol_Base
@@ -55,7 +51,8 @@ protected:
     };
     struct Command
     {
-        CommandType command=CommandType::UNKNOWN;
+		Command();
+        CommandType command;
         std::vector<std::string> parameters;
     };
     virtual Protocol_Base::Command RecognizeCommand(const std::string command) const = 0;

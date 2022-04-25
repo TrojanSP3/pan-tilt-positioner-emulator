@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BD0F7660-3F7D-419D-BA83-72621E0BCC4E}</ProjectGuid>
+    <RootNamespace>PT_POS_EMULATOR_TEST</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)\build\windows\Test\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\build\windows\Test\obj\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)\build\windows\Bin\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\build\windows\Bin\obj\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\crossplatform.cpp" />
+    <ClCompile Include="Sources\TcpSocket\tcpsocket.cpp" />
+    <ClCompile Include="Sources\config.cpp" />
+    <ClCompile Include="Sources\configfile.cpp" />
+    <ClCompile Include="Sources\drawing.cpp" />
+    <ClCompile Include="Sources\engine.cpp" />
+    <ClCompile Include="Sources\log.cpp" />
+    <ClCompile Include="Sources\main_test.cpp" />
+    <ClCompile Include="Sources\mso_state.cpp" />
+    <ClCompile Include="Sources\property.cpp" />
+    <ClCompile Include="Sources\protocol_base.cpp" />
+    <ClCompile Include="Sources\protocol_mso2.cpp" />
+    <ClCompile Include="Sources\tcpserver.cpp" />
+    <ClCompile Include="Sources\TcpSocket\socketstatus.cpp" />
+    <ClCompile Include="Sources\TcpSocket\tcpclientsocket.cpp" />
+    <ClCompile Include="Sources\TcpSocket\tcpserversocket.cpp" />
+    <ClCompile Include="Sources\TcpSocket\tcpsocketexception.cpp" />
+    <ClCompile Include="Sources\Tests\Framework\testcase.cpp" />
+    <ClCompile Include="Sources\Tests\Framework\testclass.cpp" />
+    <ClCompile Include="Sources\Tests\Framework\testexception.cpp" />
+    <ClCompile Include="Sources\Tests\Framework\testframework.cpp" />
+    <ClCompile Include="Sources\Tests\Framework\testsuite.cpp" />
+    <ClCompile Include="Sources\Tests\Framework\testutilities.cpp" />
+    <ClCompile Include="Sources\Tests\testconfigfile.cpp" />
+    <ClCompile Include="Sources\Tests\testdrawing.cpp" />
+    <ClCompile Include="Sources\Tests\testengine.cpp" />
+    <ClCompile Include="Sources\Tests\testlog.cpp" />
+    <ClCompile Include="Sources\Tests\testproperty.cpp" />
+    <ClCompile Include="Sources\Tests\testprotocolmso2.cpp" />
+    <ClCompile Include="Sources\Tests\testtcpserver.cpp" />
+    <ClCompile Include="Sources\Tests\testtcpsocket.cpp" />
+    <ClCompile Include="Sources\Tests\testutils.cpp" />
+    <ClCompile Include="Sources\utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\crossplatform.h" />
+    <ClInclude Include="Sources\TcpSocket\tcpsocket.h" />
+    <ClInclude Include="Sources\config.h" />
+    <ClInclude Include="Sources\configfile.h" />
+    <ClInclude Include="Sources\drawing.h" />
+    <ClInclude Include="Sources\engine.h" />
+    <ClInclude Include="Sources\log.h" />
+    <ClInclude Include="Sources\mso_state.h" />
+    <ClInclude Include="Sources\property.h" />
+    <ClInclude Include="Sources\protocol_base.h" />
+    <ClInclude Include="Sources\protocol_mso2.h" />
+    <ClInclude Include="Sources\tcpserver.h" />
+    <ClInclude Include="Sources\TcpSocket\socketstatus.h" />
+    <ClInclude Include="Sources\TcpSocket\tcpclientsocket.h" />
+    <ClInclude Include="Sources\TcpSocket\tcpserversocket.h" />
+    <ClInclude Include="Sources\TcpSocket\tcpsocketexception.h" />
+    <ClInclude Include="Sources\Tests\Framework\globaltestlist.h" />
+    <ClInclude Include="Sources\Tests\Framework\testcase.h" />
+    <ClInclude Include="Sources\Tests\Framework\testclass.h" />
+    <ClInclude Include="Sources\Tests\Framework\testexception.h" />
+    <ClInclude Include="Sources\Tests\Framework\testframework.h" />
+    <ClInclude Include="Sources\Tests\Framework\testsuite.h" />
+    <ClInclude Include="Sources\Tests\Framework\testutilities.h" />
+    <ClInclude Include="Sources\Tests\testconfigfile.h" />
+    <ClInclude Include="Sources\Tests\testdrawing.h" />
+    <ClInclude Include="Sources\Tests\testengine.h" />
+    <ClInclude Include="Sources\Tests\testlog.h" />
+    <ClInclude Include="Sources\Tests\testproperty.h" />
+    <ClInclude Include="Sources\Tests\testprotocolmso2.h" />
+    <ClInclude Include="Sources\Tests\testtcpserver.h" />
+    <ClInclude Include="Sources\Tests\testtcpsocket.h" />
+    <ClInclude Include="Sources\Tests\testutils.h" />
+    <ClInclude Include="Sources\utils.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

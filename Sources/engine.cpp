@@ -8,8 +8,26 @@
 
 const std::string LOGMODULE="Engine";
 
+Engine::Axis::~Axis()
+{
+
+}
+
+Engine::Axis::Axis()
+{
+	current_position.store(0);
+	move_by_position.store(false);
+	target_position.store(0);
+
+	current_speed.store(0);
+	move_by_speed.store(false);
+	target_speed.store(0);
+}
+
 Engine::Engine()
 {
+	engine_thread=nullptr;
+
     elevation.current_position.store(CONFIG::ENGINE::ZERO_ELEVATION.Get());
 }
 

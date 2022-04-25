@@ -21,19 +21,20 @@ protected:
     void UpdateCharMapForElevation();
 
 private:
-    bool need_update_azimuth_char_map = true;
-    bool need_update_elevation_char_map = true;
-    int current_azimuth=0;
-    int current_elevation=0;
-    char** char_map_azimuth=nullptr;
-    char** char_map_elevation=nullptr;
-    int char_map_azimuth_height=0;
-    int char_map_azimuth_width=0;
-    int char_map_elevation_height=0;
-    int char_map_elevation_width=0;
-    int precision_in_mso2_units=0;
-    int sqr_diff_from_center_to_draw_circle_min=0;
-    int sqr_diff_from_center_to_draw_circle_max=0;
+	Drawing();
+    bool need_update_azimuth_char_map;
+    bool need_update_elevation_char_map;
+    int current_azimuth;
+    int current_elevation;
+    char** char_map_azimuth;
+    char** char_map_elevation;
+    int char_map_azimuth_height;
+    int char_map_azimuth_width;
+    int char_map_elevation_height;
+    int char_map_elevation_width;
+    int precision_in_mso2_units;
+    int sqr_diff_from_center_to_draw_circle_min;
+    int sqr_diff_from_center_to_draw_circle_max;
 
 };
 

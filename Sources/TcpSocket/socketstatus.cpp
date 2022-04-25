@@ -1,8 +1,15 @@
 #include "socketstatus.h"
+#include "../crossplatform.h"
 
+#ifdef WINDOWS_PLATFORM
+#include <winsock2.h>
+#include <mstcpip.h>
+#include <iostream>
+#else
 #include <netinet/tcp.h>
 #include <poll.h>
 #include <sys/ioctl.h>
+#endif
 
 SocketStatus::SocketStatus(int socket)
 {
@@ -29,9 +36,35 @@ void SocketStatus::ByPoll()
     const int POLLING_TIMEOUT_MS=250;
     pollfd fileDescriptor;
     fileDescriptor.fd = socket;
-    fileDescriptor.events = POLLIN | POLLOUT | POLLPRI;
     fileDescriptor.revents = 0;
-    int poll_result = poll(&fileDescriptor,1,POLLING_TIMEOUT_MS);
+
+#ifdef WINDOWS_PLATFORM
+	fileDescriptor.events = POLLIN | POLLOUT;
+	int poll_result = WSAPoll(&fileDescriptor,1,POLLING_TIMEOUT_MS);
+	if(poll_result==SOCKET_ERROR)
+	{
+		int errorCode = WSAGetLastError();
+		switch(errorCode)
+		{
+		case WSAENETDOWN: 
+			std::cerr<<"WSAENETDOWN"<<std::endl;
+		break;
+		case WSAEFAULT: 
+			std::cerr<<"WSAEFAULT"<<std::endl;
+		break;
+		case WSAEINVAL: 
+			std::cerr<<"WSAEINVAL"<<std::endl;
+		break;
+		case WSAENOBUFS: 
+			std::cerr<<"WSAENOBUFS"<<std::endl;
+		break;
+		}
+		return;
+	}
+#else
+	fileDescriptor.events = POLLIN | POLLOUT | POLLPRI;
+	int poll_result = poll(&fileDescriptor,1,POLLING_TIMEOUT_MS);
+#endif
 
     short poll_in = fileDescriptor.revents & POLLIN ;
     //short poll_pri = fileDescriptor.revents & POLLPRI ;
@@ -49,18 +82,28 @@ void SocketStatus::ByPoll()
 
 void SocketStatus::ByIoctl()
 {
-    int result=0;
-    int ioctl_result = ioctl(socket,FIONREAD,&result);
+    
+#ifdef WINDOWS_PLATFORM
+	u_long result=0;
+	int ioctl_result = ioctlsocket(socket,FIONREAD,&result);
+#else
+	int result=0;
+	int ioctl_result = ioctl(socket,FIONREAD,&result);
+#endif
+
     if(ioctl_result == 0 )
         bytes = result;
 }
 
 void SocketStatus::ByGetsockopt()
 {
-    tcp_info info;
+#ifdef WINDOWS_PLATFORM
+#else
+	tcp_info info;
     unsigned int size_info = sizeof(info);
     int result = getsockopt(socket, SOL_TCP, TCP_INFO, &info, &size_info);
-    if(result==0)
+
+	if(result==0)
     {
         switch(info.tcpi_state)
         {
@@ -81,7 +124,8 @@ void SocketStatus::ByGetsockopt()
     {
         errors=true;
     }
-
+#endif
+    
 }
 
 bool SocketStatus::isValid() const

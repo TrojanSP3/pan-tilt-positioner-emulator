@@ -32,18 +32,17 @@
 *.app
 
 #Project local files
+*.sdf
+*.suo
+*.psess
 *.user
 *.sdf
 *.opensdf
 *.vcxproj.filters
+*.vspx
 
 #Project local dirs
 build/
 Protocols/
 LICENSE
-
-#In development
-MVS_Solution.sdf
-MVS_Solution.sln
-MVS_Solution.v11.suo
 

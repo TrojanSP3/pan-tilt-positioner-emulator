@@ -1,9 +1,8 @@
 #ifndef TCPSERVERSOCKET_H
 #define TCPSERVERSOCKET_H
+#include "tcpclientsocket.h"
 
 #include <memory>
-
-#include "tcpclientsocket.h"
 
 class TcpServerSocket
 {

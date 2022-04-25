@@ -6,6 +6,7 @@ CONFIG -= qt
 LIBS += -lpthread
 
 HEADERS += \
+Sources/crossplatform.h \
 Sources/main.h \
 Sources/TcpSocket/tcpsocketexception.h \
 Sources/TcpSocket/socketstatus.h \
@@ -25,6 +26,7 @@ Sources/protocol_base.h \
 Sources/protocol_mso2.h \
 
 SOURCES += \
+Sources/crossplatform.cpp \
 Sources/main.cpp \
 Sources/TcpSocket/tcpsocketexception.cpp \
 Sources/TcpSocket/socketstatus.cpp \

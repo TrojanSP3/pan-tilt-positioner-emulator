@@ -1,6 +1,5 @@
 #ifndef TCPSERVER_H
 #define TCPSERVER_H
-
 #include "TcpSocket/tcpserversocket.h"
 
 #include <atomic>
@@ -12,6 +11,7 @@
 class TCPServer
 {
 public:
+	TCPServer();
     ~TCPServer();
     void Start(const uint16_t port);
     void Stop();
@@ -32,7 +32,7 @@ private:
     void AddToOutputBuffer(std::string msg);
     std::string GetFromOutputBuffer();
 
-    uint16_t port=0;
+    uint16_t port;
     std::queue<std::string> inputStringBuffer;
     std::mutex inputStringBufferMutex;
     std::queue<std::string> outputStringBuffer;
@@ -41,14 +41,14 @@ private:
     std::mutex tcpClientsMutex;
 
     TcpServerSocket serverSocket;
-    std::atomic<bool> isServerReadyToListen = {false};
+    std::atomic<bool> isServerReadyToListen;
 
     static void server_thread_procedure(TCPServer* obj);
     std::atomic<bool> server_thread_flag_stop;
-    std::thread* server_thread=nullptr;
+    std::thread* server_thread;
 
     static void clients_thread_procedure(TCPServer* obj);
-    std::thread* clients_thread=nullptr;
+    std::thread* clients_thread;
 };
 
 #endif // TCPSERVER_H

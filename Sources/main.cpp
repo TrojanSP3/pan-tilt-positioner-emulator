@@ -1,36 +1,50 @@
 #define VERSION (__DATE__ " " __TIME__)
-
-#include <string.h>
-#include <vector>
-#include <iostream>
-#include <unistd.h>
-
 #include "main.h"
+#include "crossplatform.h"
 #include "config.h"
-#include "log.h"
-#include "drawing.h"
 #include "configfile.h"
+#include "drawing.h"
+#include "log.h"
 #include "protocol_mso2.h"
+
+#include <iostream>
 
 const std::string LOGMODULE="Main";
 
 int main(int argc, char *argv[])
 {
-    int exit_code = Main::main(argc, argv);
-    std::cout.flush();
+	int exit_code;
+	try
+	{
+		exit_code = Main::main(argc, argv);
+	}
+	catch(std::exception& e)
+	{
+		std::cerr<<"UNHANDLED EXCEPTION: "<<e.what()<<std::endl;;
+		exit_code = EXIT_FAILURE;
+	}
+	catch(...)
+	{
+		std::cerr<<"UNHANDLED ERROR"<<std::endl;;
+		exit_code = EXIT_FAILURE;
+	}
+	std::cout.flush();
     std::cerr.flush();
-    LOG.Stop();
-    return exit_code;
+	return exit_code;
 }
+
 const std::string KEYWORD_HELP    = "--help";
 const std::string KEYWORD_VERSION = "--version";
 const std::string KEYWORD_PROTOCOL_MSO2 = "mso2";
 
 int Main::main(int argc, char **argv)
 {
+	PlatformInitialization();
+
     try
     {
-        ChangeWorkingDir(argv[0]);
+		std::string workDir = Utils::GetDirectoryFromARGV0(argv[0]);
+		Utils::ChangeWorkingDirectory(workDir);
     }
     catch(std::exception& e)
     {
@@ -68,32 +82,9 @@ int Main::main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+	LOG.Stop();
+
     return EXIT_SUCCESS;
-}
-
-void Main::ChangeWorkingDir(char *argv_0)
-{
-    if(argv_0==nullptr)
-        throw std::runtime_error("ChangeWorkingDir: null argv_0");
-
-    std::string new_dir = argv_0;
-    size_t pos = new_dir.find_last_of('/');
-    if(pos==std::string::npos)
-        throw std::runtime_error("ChangeWorkingDir: symbol not found");
-
-    new_dir = new_dir.substr(0,pos+1);
-    if(new_dir.empty())
-        throw std::runtime_error("ChangeWorkingDir: path is empty");
-
-    int result = chdir(new_dir.c_str());
-    if(result)
-    {
-        std::string errno_message(strerror(errno));
-        std::string error_message=
-                "Error on changing working directory: "+new_dir+"\r\n"
-                +errno_message;
-        throw std::runtime_error(error_message);
-    }
 }
 
 void Main::PrintHelp(const std::string program)
@@ -246,7 +237,7 @@ bool Main::Start_Loop(Protocol_Base& protocol)
 
             if(need_to_redraw_picture)
             {
-                std::string timestamp ="Time: "+Utils::GetCurrentTime();
+                std::string timestamp ="Time: "+Utils::GetCurrentTimeAsString();
                 std::string text_a_pos=
                         period_position_to_string(current_state.azimuth_position);
                 std::string text_e_pos=
@@ -309,11 +300,6 @@ bool Main::Start_Loop(Protocol_Base& protocol)
     }
     return true;
 }
-
-
-
-
-
 
 
 int Main::StartMSO2(std::string config_path)

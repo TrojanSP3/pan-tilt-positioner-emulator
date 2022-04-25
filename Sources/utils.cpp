@@ -1,21 +1,21 @@
 #include "utils.h"
+#include "crossplatform.h"
+#include "config.h"
 
-#include <iostream>
-#include <thread>
-#include <math.h>
 #include <algorithm>
+#include <cstring>
 #include <ctime>
+#include <iostream>
+#include <math.h>
+#include <thread>
 
-#ifdef _WIN32
-	#include <windows.h>
-	//#include <processthreadsapi.h>
-	#include <sstream>
+#ifdef WINDOWS_PLATFORM
+	#include <direct.h>
 #else
     #include <unistd.h>
-	#include <sys/prctl.h>
+    #include <sys/prctl.h>
 #endif
 
-#include "config.h"
 
 void Utils::Sleep(const int time_ms)
 {
@@ -32,17 +32,40 @@ void Utils::ClearScreen()
 
 void Utils::SetThreadName(const std::string name)
 {
-    const int MAX_NAME_LEN=16;//prctl docs
+#ifdef WINDOWS_PLATFORM
+#else
+	const int MAX_NAME_LEN=16;//prctl docs
     if(name.length()>MAX_NAME_LEN-1)
         name.substr(0,MAX_NAME_LEN-1);
     std::string tmp = name+'\0';
-
-#ifdef _WIN32
-	//HRESULT hr = SetThreadDescription(GetCurrentThread(), L"simulation_thread");
-#else
 	prctl(PR_SET_NAME,tmp.c_str(),0,0,0);
 #endif
-	    
+}
+
+std::string Utils::GetDirectoryFromARGV0(const char* argv0)
+{
+	std::string result(argv0);
+	size_t pos = result.find_last_of(FILE_PATH_SEPARATOR_CHAR);
+	if(pos==std::string::npos)
+        throw std::runtime_error("GetDirectoryFromARGV0: symbol not found\n"+result);
+	result = result.substr(0,pos+1);
+	
+	return result;
+}
+
+void Utils::ChangeWorkingDirectory(const std::string path)
+{
+	if(path.empty())
+        throw std::runtime_error("ChangeWorkingDirectory: path is empty");  
+    int result = CHANGE_DIRECTORY_FUNCTION(path.c_str());
+    if(result)
+    {
+        std::string errno_message(strerror(errno));
+        std::string error_message=
+                "Error on changing working directory: "+path+"\r\n"
+                +errno_message;
+        throw std::runtime_error(error_message);
+    }
 }
 
 double Utils::RadToDegrees(const double rad)
@@ -70,7 +93,7 @@ int Utils::DegreesToMsoRad(const double deg)
     return RadToMsoRad(DegreesToRad(deg));
 }
 
-std::string Utils::GetCurrentTime()
+std::string Utils::GetCurrentTimeAsString()
 {
     const std::time_t t = std::time(nullptr);
     const std::tm tm = *std::localtime(&t);
@@ -93,14 +116,16 @@ std::string Utils::GetCurrentTime()
 void Utils::Ltrim(std::string &s)
 {//https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
     s.erase(s.begin(), std::find_if(s.begin(), s.end(),
-            std::not1(std::ptr_fun<int, int>(std::isspace))));
+            std::not1(std::ptr_fun<int, int>(STD_ISSPACE_FUNCTION))));
 }
 
 void Utils::Rtrim(std::string &s)
 {//https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
     s.erase(std::find_if(s.rbegin(), s.rend(),
-            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+            std::not1(std::ptr_fun<int, int>(STD_ISSPACE_FUNCTION))).base(), s.end());
 }
+
+
 
 void Utils::Trim(std::string &s)
 {

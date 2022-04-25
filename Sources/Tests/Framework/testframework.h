@@ -1,23 +1,20 @@
 #ifndef TESTFRAMEWORK_H
 #define TESTFRAMEWORK_H
-
-#include <string>
-#include <vector>
-#include <thread>
-#include <chrono>
-
-#include "testexception.h"
 #include "testcase.h"
 #include "testclass.h"
+#include "testexception.h"
 #include "testutilities.h"
+
+#include <chrono>
+#include <thread>
 
 namespace UnitTests {
 
     class TestFramework
     {
-        TestFramework()=delete;
+        TestFramework(){}
     public:
-        static bool RunAllTests();
+		static bool RunAllTests();
         static bool RunTestList(std::vector<TestCase> tests);
         static bool RunTest(TestCase test);
         static void LogMsg(std::string msg);

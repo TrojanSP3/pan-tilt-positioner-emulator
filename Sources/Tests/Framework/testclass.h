@@ -1,14 +1,13 @@
 #ifndef TESTCLASS_H
 #define TESTCLASS_H
+#include "testcase.h"
 
 #include <vector>
-
-#include "testcase.h"
 
 namespace UnitTests {
 
     class TestClass {
-        TestClass()=delete;
+        TestClass(){}
     public:
         static std::vector<TestCase> GetTestCases();
     };

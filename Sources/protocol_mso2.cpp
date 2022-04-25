@@ -45,6 +45,19 @@ inline int random_vol(int min=MIN_VOL,int max=MAX_VOL)
     return result;
 }
 
+Protocol_MSO2::Protocol_MSO2()
+{
+	isProcessing_azimuth_synchronization = false;
+    isProcessing_elevation_synchronization = false;
+    isProcessing_azimuth_positioning = false;
+    isProcessing_elevation_positioning = false;
+
+	need_to_destroy_thread.store(false);
+    thread_period = nullptr;
+    need_to_send_period.store(false);
+    period_intervals_by_10_ms.store(0);
+}
+
 Protocol_MSO2::~Protocol_MSO2()
 {
     need_to_destroy_thread.store(true);
@@ -449,14 +462,17 @@ void Protocol_MSO2::Process_azimuth_synchronization()
         {
             int max_speed = Utils::Mso_EpsToVel(CONFIG::ENGINE::MAX_AZIMUTH_SPEED_PER_SECOND.Get());
             int current_position=engine.GetAzimuthPosition();
-            engine.SetAzimuthSpeed(max_speed);
             if(current_position<previous_position)
             {
                 engine.SetAzimuthPosition(0);
                 if(current_position==0)
                     state.azimuth_syncronized=true;
             }
-            previous_position=current_position;
+			else
+			{
+				engine.SetAzimuthSpeed(max_speed);
+				previous_position=current_position;
+			}
         }
     }
     else
@@ -689,7 +705,7 @@ void Protocol_MSO2::Cmd_i_set(const Command& command)
             int32_t val_int = std::stoi( command.parameters[2] );
             if(val_int==0 || val_int==1)
             {
-                bool val = val_int;
+                bool val = val_int>0;
                 if(num>=0 && num<=NUMBER_OF_INPUTS)
                 {
                     state.inputs[static_cast<uint32_t>(num)]=val;
@@ -722,7 +738,7 @@ void Protocol_MSO2::Cmd_o_set(const Command& command)
             int32_t val_int = std::stoi( command.parameters[2] );
             if(val_int==0 || val_int==1)
             {
-                bool val = val_int;
+                bool val = val_int>0;
                 if(num>=0 && num<=NUMBER_OF_INPUTS)
                 {
                     state.outputs[static_cast<uint32_t>(num)]=val;

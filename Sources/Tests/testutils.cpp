@@ -26,7 +26,7 @@ void TestUtils::Sleep()
     Utils::Sleep(SLEEP_TIME_MS);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-    long time_elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    long long time_elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     ASSERT(time_elapsed_ms>=SLEEP_TIME_MS);
 }
 
@@ -66,7 +66,7 @@ void TestUtils::DateTimeString()
 {
     const std::string FORMAT="hh:mm:ss.zzz";
     const int NUMBERS_COUNT=9;
-    std::string msg = Utils::GetCurrentTime();
+    std::string msg = Utils::GetCurrentTimeAsString();
     TestFramework::LogMsg(msg);
     ASSERT(!msg.empty());
     ASSERT(msg.length()==FORMAT.length());

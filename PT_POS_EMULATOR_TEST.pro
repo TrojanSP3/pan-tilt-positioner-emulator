@@ -6,6 +6,7 @@ CONFIG -= qt
 LIBS += -lpthread
 
 HEADERS += \
+Sources/crossplatform.h \
 Sources/Tests/Framework/globaltestlist.h \
 Sources/Tests/Framework/testframework.h \
 Sources/Tests/Framework/testclass.h \
@@ -43,6 +44,7 @@ Sources/protocol_mso2.h \
 
 
 SOURCES += \
+Sources/crossplatform.cpp \
 Sources/main_test.cpp \
 Sources/Tests/Framework/testframework.cpp \
 Sources/Tests/Framework/testclass.cpp \

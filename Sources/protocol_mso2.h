@@ -1,14 +1,14 @@
 #ifndef PROTOCOL_MSO2_H
 #define PROTOCOL_MSO2_H
+#include "protocol_base.h"
 
 #include <unordered_map>
-
-#include "protocol_base.h"
 
 class Protocol_MSO2: public Protocol_Base
 {
 public:
     void PeriodLoop();
+	Protocol_MSO2();
     virtual ~Protocol_MSO2();
     static const int NUMBER_OF_INPUTS = 16;
 protected:
@@ -20,18 +20,18 @@ protected:
     void Process_elevation_synchronization();
     static void period_thread_procedure(Protocol_MSO2* obj);
 
-    bool isProcessing_azimuth_synchronization = false;
-    bool isProcessing_elevation_synchronization = false;
-    bool isProcessing_azimuth_positioning = false;
+    bool isProcessing_azimuth_synchronization;
+    bool isProcessing_elevation_synchronization;
+    bool isProcessing_azimuth_positioning;
     int processing_azimuth_positioning_target;
-    bool isProcessing_elevation_positioning = false;
+    bool isProcessing_elevation_positioning;
     int processing_elevation_positioning_target;
 
-    const int MIN_PERIOD_INTERVAL_MS = 10;
-    std::atomic<bool> need_to_destroy_thread = {false};
-    std::thread* thread_period = nullptr;
-    std::atomic<bool> need_to_send_period = {false};
-    std::atomic<int> period_intervals_by_10_ms = {0};
+    static const int MIN_PERIOD_INTERVAL_MS = 10;
+    std::atomic<bool> need_to_destroy_thread;
+    std::thread* thread_period;
+    std::atomic<bool> need_to_send_period;
+    std::atomic<int> period_intervals_by_10_ms;
 private:
     void CreateCommandMap();
     void ProcessTcpIncomingData();

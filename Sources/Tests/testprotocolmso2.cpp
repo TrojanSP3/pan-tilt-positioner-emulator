@@ -8,7 +8,7 @@ using namespace UnitTests;
 
 const std::string CLRF = "\r\n";
 const int TestProtocolMSO2::SHORT_SLEEP=100;
-const int TestProtocolMSO2::LONG_TIMEOUT=5000;
+const int TestProtocolMSO2::LONG_TIMEOUT=7500;
 
 std::vector<TestCase> TestProtocolMSO2::GetTestCases()
 {
@@ -223,6 +223,8 @@ void TestProtocolMSO2::Azimuth_syn()
         SLEEPMS(1000);
     }
     client.Close();
+	state = protocol.Tick();
+
     ASSERT(state.azimuth_syncronized);
     ASSERT(state.azimuth_position==0);
     ASSERT(state.azimuth_speed==0);
@@ -287,6 +289,8 @@ void TestProtocolMSO2::Elevation_syn()
         SLEEPMS(1000);
     }
     client.Close();
+	state = protocol.Tick();
+
     ASSERT(state.elevation_syncronized);
     ASSERT(state.elevation_position==CONFIG::ENGINE::ZERO_ELEVATION.Get());
     ASSERT(state.elevation_speed==0);

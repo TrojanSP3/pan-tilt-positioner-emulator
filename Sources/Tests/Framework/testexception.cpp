@@ -19,7 +19,7 @@ TestException::~TestException()
 {
     message = "Don't use it after destruction!";
 }
-const char* TestException::what() const noexcept
+const char* TestException::what() const NOEXCEPT
 {
     return message.c_str();
 }

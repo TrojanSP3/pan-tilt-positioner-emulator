@@ -1,11 +1,10 @@
 #ifndef ENGINE_H
 #define ENGINE_H
-
-#include <atomic>
-#include <thread>
-
-#include "utils.h"
 #include "config.h"
+#include "utils.h"
+
+
+#include <thread>
 
 class Engine
 {
@@ -28,23 +27,25 @@ public:
     void Loop();
 private:
     static void engine_thread_procedure(Engine* obj);
-    std::thread* engine_thread=nullptr;
+    std::thread* engine_thread;
     std::atomic<bool> engine_thread_flag_stop;
 
     struct Axis
     {
-          std::atomic<int> current_position={0};
-          std::atomic<bool> move_by_position={false};
-          std::atomic<int> target_position={0};
+        virtual ~Axis();
+		Axis();
+        std::atomic<int> current_position;
+        std::atomic<bool> move_by_position;
+        std::atomic<int> target_position;
 
-          std::atomic<int> current_speed={0};
-          std::atomic<bool> move_by_speed={false};
-          std::atomic<int> target_speed={0};
+        std::atomic<int> current_speed;
+        std::atomic<bool> move_by_speed;
+        std::atomic<int> target_speed;
 
-          virtual bool IsAzimuth() const = 0;
-          virtual int PositionValueValidator(int val) const = 0;
-          virtual int MAX_AXIS_SPEED_PER_SECOND() const = 0;
-          virtual int MAX_AXIS_SPEED_PER_TICK() const = 0;
+        virtual bool IsAzimuth() const = 0;
+        virtual int PositionValueValidator(int val) const = 0;
+        virtual int MAX_AXIS_SPEED_PER_SECOND() const = 0;
+        virtual int MAX_AXIS_SPEED_PER_TICK() const = 0;
     };
     struct Azimuth: Axis
     {

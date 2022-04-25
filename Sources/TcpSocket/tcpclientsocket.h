@@ -1,7 +1,5 @@
 #ifndef TCPCLIENTSOCKET_H
 #define TCPCLIENTSOCKET_H
-
-#include "tcpsocketexception.h"
 #include "tcpsocket.h"
 
 class TcpClientSocket
@@ -16,10 +14,10 @@ public:
     bool IsOpen();
     int BytesAvailable();
 
-    ssize_t Read(char *data, uint64_t size);
+    ssize_t Read(char *data, size_t size);
     char ReadByte();
     std::string ReadLine();
-    ssize_t Write(const char *data, uint64_t size);
+    ssize_t Write(const char *data, size_t size);
     void WriteLine(std::string data);
     int Id();
 private:

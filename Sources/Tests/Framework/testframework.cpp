@@ -1,9 +1,7 @@
 #include "testframework.h"
+#include "globaltestlist.h"
 
 #include <iostream>
-#include <functional>
-
-#include "globaltestlist.h"
 
 using namespace UnitTests;
 
@@ -89,7 +87,7 @@ void TestFramework::LogMsg(std::string msg)
 std::string TestFramework::FormatLogMsg(TestCase test, std::string msg)
 {
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-    long time_elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - timeStarted).count();
+    long long time_elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - timeStarted).count();
     double time_elapsed_s = static_cast<double>(time_elapsed_ms)/1000;
     std::string timestamp=std::to_string(time_elapsed_s);
     timestamp=timestamp.substr(0,timestamp.length()-3);

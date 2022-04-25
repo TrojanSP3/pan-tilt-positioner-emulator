@@ -1,18 +1,16 @@
 #ifndef CONFIGFILE_H
 #define CONFIGFILE_H
+#include "property.h"
 
-#include <string>
 #include <map>
 #include <vector>
-
-#include "property.h"
 
 class ConfigPropertyLink
 {
 public:
     ConfigPropertyLink(std::string _name,PropertyBase* _link): name(_name), link(_link) {}
-    std::string name = "";
-    PropertyBase* link=nullptr;
+    std::string name;
+    PropertyBase* link;
 };
 
 class ConfigFile
@@ -36,11 +34,11 @@ private:
     std::string GetLineFromPairKeyValue(const std::string key,const std::string value);
     std::vector<std::string> CompareMapToFile();
 
-    std::string filename="";
+    std::string filename;
     std::vector<std::string> file_content;
     std::map<std::string,std::string> file_map;
     std::vector<ConfigPropertyLink> config_map;
-    const char DELIM='=';
+    static const char DELIM='=';
 };
 
 #endif // CONFIGFILE_H

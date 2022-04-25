@@ -1,5 +1,10 @@
 #include "protocol_base.h"
 
+Protocol_Base::Command::Command()
+{
+	command=CommandType::UNKNOWN;
+}
+
 void Protocol_Base::Init(const MSO_State init_state,int tcp_server_port)
 {
     state = init_state;

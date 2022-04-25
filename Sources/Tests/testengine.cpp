@@ -4,11 +4,11 @@
 
 #include "../engine.h"
 #include "../config.h"
-#include "../utility"
+#include "../utils.h"
 
 using namespace UnitTests;
 
-const int TestEngine::LONG_TIMEOUT=5000;
+const int TestEngine::LONG_TIMEOUT=7500;
 
 std::vector<TestCase> TestEngine::GetTestCases()
 {
@@ -50,9 +50,9 @@ std::string PrintEngineStatus(Engine* engine)
     const size_t SPACES_LINE_1 = MAX_LENGTH-MAX_LENGTH_LINE_1+1+2;
     const size_t SPACES_LINE_2 = MAX_LENGTH-MAX_LENGTH_LINE_2+1;
     const size_t SPACES_LINE_3 = MAX_LENGTH-MAX_LENGTH_LINE_3+1;
-    const std::string  WORD_SPACES_LINE_1 = std::string({}).append(SPACES_LINE_1,' ');
-    const std::string  WORD_SPACES_LINE_2 = std::string({}).append(SPACES_LINE_2,' ');
-    const std::string  WORD_SPACES_LINE_3 = std::string({}).append(SPACES_LINE_3,' ');
+    const std::string  WORD_SPACES_LINE_1 = std::string("").append(SPACES_LINE_1,' ');
+    const std::string  WORD_SPACES_LINE_2 = std::string("").append(SPACES_LINE_2,' ');
+    const std::string  WORD_SPACES_LINE_3 = std::string("").append(SPACES_LINE_3,' ');
 
     int current_azimuth_position = engine->GetAzimuthPosition();
     int current_azimuth_speed = engine->GetAzimuthSpeed();

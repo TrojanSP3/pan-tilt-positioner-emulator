@@ -1,7 +1,6 @@
 #include "tcpserver.h"
-
-#include "log.h"
 #include "config.h"
+#include "log.h"
 #include "utils.h"
 
 const std::string LOGMODULE="TCPServer";
@@ -10,11 +9,17 @@ const int TIMEOUT_MS=5000;
 const int TIMEOUT_INTERVAL=100;
 const int TIMEOUT_ITERATIONS=TIMEOUT_MS/TIMEOUT_INTERVAL;
 
+TCPServer::TCPServer()
+{
+	port = 0;
+	isServerReadyToListen.store(false);
+	server_thread = nullptr;
+	clients_thread = nullptr;
+}
+
 TCPServer::~TCPServer()
 {
     Stop();
-
-
 }
 
 void TCPServer::Start(const uint16_t port)

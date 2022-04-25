@@ -41,7 +41,7 @@ int TcpClientSocket::BytesAvailable()
     return status.AvailableBytes();
 }
 
-ssize_t TcpClientSocket::Read(char *data, uint64_t size)
+ssize_t TcpClientSocket::Read(char *data, size_t size)
 {
     return clientSocket.Read(data,size);
 }
@@ -51,7 +51,10 @@ char TcpClientSocket::ReadByte()
     char result = 0;
     ssize_t res = Read(&result,1);
     if(res<=0)
-        throw TcpSocketException::CreateErrnoException(errno);
+	{
+		int error_code = TcpSocketException::GetLastErrorCode();
+        throw TcpSocketException::CreateErrorException(error_code);
+	}
     return result;
 }
 
@@ -76,9 +79,10 @@ std::string TcpClientSocket::ReadLine()
             ++buffer_pos;
         }
         else
-        {
-            throw TcpSocketException::CreateErrnoException(errno);
-        }
+		{
+			int error_code = TcpSocketException::GetLastErrorCode();
+			throw TcpSocketException::CreateErrorException(error_code);
+		}
     }while(buffer_char!='\0' && buffer_char!='\n');
 
     std::string result(buffer);
@@ -101,7 +105,7 @@ std::string TcpClientSocket::ReadLine()
     return result;
 }
 
-ssize_t TcpClientSocket::Write(const char *data, uint64_t size)
+ssize_t TcpClientSocket::Write(const char *data, size_t size)
 {
     return clientSocket.Write(data,size);
 }
@@ -110,9 +114,10 @@ void TcpClientSocket::WriteLine(std::string data)
 {
     ssize_t sended_bytes = Write(data.c_str(), data.length());
     if(sended_bytes<=0)
-    {
-        throw TcpSocketException::CreateErrnoException(errno);
-    }
+	{
+		int error_code = TcpSocketException::GetLastErrorCode();
+		throw TcpSocketException::CreateErrorException(error_code);
+	}
 }
 
 int TcpClientSocket::Id()
